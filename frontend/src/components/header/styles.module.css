@@ -1,0 +1,18 @@
+.header {
+  height: 130px;
+  background-color: #c6240b;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  padding: 0 30px;
+}
+
+.header h3 {
+  color: #ffffff;
+}
+
+.image {
+  width: 25rem;
+  border-radius: 0.4rem;
+}

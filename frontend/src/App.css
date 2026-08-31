@@ -1,0 +1,17 @@
+.app {
+  display: flex;
+  min-height: 100vh;
+}
+
+.content {
+  flex: 1;
+}
+
+.content main {
+  padding: 30px;
+}
+
+.content main h2 {
+  margin-bottom: 10px;
+  text-align: center;
+}
