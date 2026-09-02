@@ -26,7 +26,7 @@ function Sidebar() {
           <li>
             <Link to="/configuracoes">Configurações</Link>
           </li>
-          <li>Vaículos</li>
+          <li>Veículos</li>
         </ul>
       </nav>
     </aside>
