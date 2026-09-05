@@ -1,0 +1,17 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+model Aluno {
+  id        Int      @id @default(autoincrement())
+  nome      String
+  cpf       String   @unique
+  telefone  String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
