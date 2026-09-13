@@ -1,3 +1,7 @@
+/* ---------------------------------------------------------------
+   Estilos compartilhados de todo o sistema
+--------------------------------------------------------------- */
+
 .app {
   display: flex;
   min-height: 100vh;
@@ -5,13 +9,323 @@
 
 .content {
   flex: 1;
+  min-width: 0;
 }
 
 .content main {
   padding: 30px;
+  max-width: 1100px;
 }
 
 .content main h2 {
-  margin-bottom: 10px;
+  margin-bottom: 20px;
   text-align: center;
+}
+
+.carregando {
+  text-align: center;
+  padding: 60px;
+  color: var(--cor-texto-suave);
+}
+
+/* ---------------- Botões ---------------- */
+
+.botao {
+  display: inline-block;
+  padding: 10px 18px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  background-color: var(--cor-painel);
+  color: var(--cor-texto);
+  cursor: pointer;
+}
+
+.botao:hover {
+  border-color: var(--cor-texto-suave);
+}
+
+.botao:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.botao-primario {
+  background-color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #ffffff;
+}
+
+.botao-primario:hover {
+  background-color: var(--cor-primaria-hover);
+  border-color: var(--cor-primaria-hover);
+}
+
+.botao-perigo {
+  background-color: var(--cor-erro);
+  border-color: var(--cor-erro);
+  color: #ffffff;
+}
+
+.botao-perigo:hover {
+  filter: brightness(0.9);
+}
+
+.botao-ativo {
+  background-color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #ffffff;
+}
+
+.botao-pequeno {
+  padding: 4px 10px;
+  font-size: 0.85rem;
+}
+
+/* ---------------- Cartões e formulários ---------------- */
+
+.cartao {
+  background-color: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.cartao h3 {
+  margin-bottom: 14px;
+}
+
+.campo {
+  display: block;
+  margin-bottom: 12px;
+}
+
+.campo span {
+  display: block;
+  margin-bottom: 4px;
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+}
+
+.campo input,
+.campo select {
+  width: 100%;
+  padding: 9px 10px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  background-color: var(--cor-campo);
+}
+
+.campo input:focus,
+.campo select:focus {
+  outline: 2px solid var(--cor-primaria);
+  outline-offset: 0;
+}
+
+.linha-campos {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.linha-campos .campo {
+  flex: 1;
+  min-width: 180px;
+}
+
+/* ---------------- Mensagens ---------------- */
+
+.mensagem {
+  margin-top: 10px;
+  padding: 10px 12px;
+  border-radius: 6px;
+  font-size: 0.95rem;
+}
+
+.mensagem.erro {
+  background-color: color-mix(in srgb, var(--cor-erro) 12%, transparent);
+  border: 1px solid var(--cor-erro);
+  color: var(--cor-erro);
+}
+
+.mensagem.sucesso {
+  background-color: color-mix(in srgb, var(--cor-sucesso) 12%, transparent);
+  border: 1px solid var(--cor-sucesso);
+  color: var(--cor-sucesso);
+}
+
+/* ---------------- Tabelas ---------------- */
+
+.tabela {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.tabela th,
+.tabela td {
+  padding: 10px 12px;
+  border-bottom: 1px solid var(--cor-borda);
+  text-align: left;
+}
+
+.tabela th {
+  background-color: var(--cor-fundo);
+  font-size: 0.9rem;
+  color: var(--cor-texto-suave);
+}
+
+.tabela tr:last-child td {
+  border-bottom: none;
+}
+
+/* ---------------- Grade de horários ---------------- */
+
+.grade-horarios {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: 10px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  background-color: var(--cor-painel);
+  font-size: 0.85rem;
+  text-align: center;
+}
+
+.slot strong {
+  font-size: 0.9rem;
+}
+
+.slot .slot-detalhe {
+  color: var(--cor-texto-suave);
+  font-size: 0.78rem;
+}
+
+.slot-livre {
+  cursor: pointer;
+}
+
+.slot-livre:hover {
+  border-color: var(--cor-primaria);
+}
+
+.slot-ocupado {
+  background-color: var(--cor-ocupado);
+  border-color: var(--cor-ocupado);
+  color: var(--cor-ocupado-texto);
+  cursor: not-allowed;
+}
+
+.slot-selecionado {
+  background-color: var(--cor-selecionado);
+  border-color: var(--cor-selecionado);
+  color: var(--cor-selecionado-texto);
+  cursor: pointer;
+}
+
+/* ---------------- Página de login / setup ---------------- */
+
+.login-pagina {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  background-color: var(--cor-fundo);
+}
+
+.login-cartao {
+  width: 100%;
+  max-width: 400px;
+  background-color: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 30px;
+  text-align: center;
+}
+
+.login-cartao h2 {
+  margin-bottom: 18px;
+}
+
+.login-cartao .campo {
+  text-align: left;
+}
+
+.login-cartao .botao {
+  width: 100%;
+  margin-top: 6px;
+}
+
+.login-logo {
+  width: 100%;
+  max-width: 280px;
+  border-radius: 8px;
+  margin-bottom: 16px;
+}
+
+.texto-ajuda {
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+  margin-bottom: 16px;
+  line-height: 1.4;
+}
+
+/* ---------------- Diversos ---------------- */
+
+.acoes-pagina {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+.lista-vazia {
+  color: var(--cor-texto-suave);
+  text-align: center;
+  padding: 20px;
+}
+
+.grupo-datas {
+  margin-bottom: 16px;
+}
+
+.grupo-datas h4 {
+  margin-bottom: 8px;
+  color: var(--cor-texto-suave);
+  font-size: 0.9rem;
+}
+
+.legenda {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+  font-size: 0.8rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 10px;
+}
+
+.legenda span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.legenda .amostra {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid var(--cor-borda);
 }

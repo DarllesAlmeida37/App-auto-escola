@@ -1,17 +1,71 @@
 generator client {
-  provider = "prisma-client"
-  output   = "../generated/prisma"
+  provider = "prisma-client-js"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
+enum TipoVeiculo {
+  CARRO
+  MOTO
+}
+
 model Aluno {
+  id           Int           @id @default(autoincrement())
+  nome         String
+  cpf          String        @unique
+  telefone     String
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  agendamentos Agendamento[]
+}
+
+model Instrutor {
+  id           Int           @id @default(autoincrement())
+  nome         String
+  cpf          String        @unique
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+
+  agendamentos Agendamento[]
+}
+
+model Agendamento {
+  id          Int         @id @default(autoincrement())
+  data        DateTime    @db.Date
+  horario     String
+  veiculo     TipoVeiculo
+
+  alunoId     Int
+  instrutorId Int
+
+  aluno       Aluno       @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  instrutor   Instrutor   @relation(fields: [instrutorId], references: [id], onDelete: Cascade)
+
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@unique([alunoId, data, horario])
+  @@unique([instrutorId, data, horario])
+}
+
+model SenhaAcesso {
   id        Int      @id @default(autoincrement())
-  nome      String
-  cpf       String   @unique
-  telefone  String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  senhaHash String
+  criadoEm  DateTime @default(now())
+}
+
+model AdminGeral {
+  id        Int      @id @default(autoincrement())
+  senhaHash String
+  criadoEm  DateTime @default(now())
+}
+
+model Sessao {
+  id        Int      @id @default(autoincrement())
+  tokenHash String   @unique
+  criadoEm  DateTime @default(now())
+  expiraEm  DateTime
 }

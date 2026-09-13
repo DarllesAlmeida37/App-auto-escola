@@ -1,18 +1,41 @@
 .header {
   height: 130px;
-  background-color: #c6240b;
+  background-color: var(--cor-primaria);
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: 16px;
 
   padding: 0 30px;
 }
 
-.header h3 {
-  color: #ffffff;
-}
-
 .image {
   width: 25rem;
+  max-width: 40vw;
   border-radius: 0.4rem;
+}
+
+.acoes {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+
+.usuario {
+  color: #ffffff;
+  font-weight: bold;
+}
+
+.sair {
+  padding: 8px 18px;
+  border: 1px solid #ffffff;
+  border-radius: 6px;
+  background-color: transparent;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.sair:hover {
+  background-color: #ffffff;
+  color: var(--cor-primaria);
 }

@@ -1,7 +1,11 @@
-import { Link } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 import styles from "./style.module.css";
 
 function Sidebar() {
+  function classeLink({ isActive }) {
+    return isActive ? `${styles.link} ${styles.ativo}` : styles.link;
+  }
+
   return (
     <aside className={styles.sidebar}>
       <h2>SERVIÇOS</h2>
@@ -9,24 +13,34 @@ function Sidebar() {
       <nav>
         <ul>
           <li>
-            <Link to="/">Dashboard</Link>
+            <NavLink to="/" end className={classeLink}>
+              Início
+            </NavLink>
           </li>
 
           <li>
-            <Link to="/alunos">Alunos</Link>
+            <NavLink to="/alunos" className={classeLink}>
+              Alunos
+            </NavLink>
           </li>
 
           <li>
-            <Link to="/instrutores">Instrutores</Link>
+            <NavLink to="/instrutores" className={classeLink}>
+              Instrutores
+            </NavLink>
           </li>
 
           <li>
-            <Link to="/agendamentos">Agendamentos</Link>
+            <NavLink to="/agendamentos" className={classeLink}>
+              Agendamentos
+            </NavLink>
           </li>
+
           <li>
-            <Link to="/configuracoes">Configurações</Link>
+            <NavLink to="/configuracoes" className={classeLink}>
+              Configurações
+            </NavLink>
           </li>
-          <li>Veículos</li>
         </ul>
       </nav>
     </aside>

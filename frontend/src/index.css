@@ -1,3 +1,56 @@
+/* ---------------------------------------------------------------
+   Temas do sistema: "dia" (padrão) e "noite".
+   A troca é feita pelo atributo data-tema no <html>.
+--------------------------------------------------------------- */
+
+:root {
+  --cor-fundo: #f4f6f8;
+  --cor-painel: #ffffff;
+  --cor-texto: #1f2937;
+  --cor-texto-suave: #6b7280;
+  --cor-borda: #d1d5db;
+  --cor-campo: #ffffff;
+
+  --cor-primaria: #c6240b;
+  --cor-primaria-hover: #a81e09;
+
+  --cor-sidebar: #000000;
+  --cor-sidebar-link: #c3c2c2;
+  --cor-sidebar-hover: #374151;
+
+  --cor-ocupado: #86efac; /* verde claro: horário já agendado */
+  --cor-ocupado-texto: #14532d;
+  --cor-selecionado: #93c5fd;
+  --cor-selecionado-texto: #1e3a8a;
+
+  --cor-sucesso: #16a34a;
+  --cor-erro: #dc2626;
+}
+
+[data-tema="noite"] {
+  --cor-fundo: #111827;
+  --cor-painel: #1f2937;
+  --cor-texto: #e5e7eb;
+  --cor-texto-suave: #9ca3af;
+  --cor-borda: #374151;
+  --cor-campo: #0b1220;
+
+  --cor-primaria: #e0351f;
+  --cor-primaria-hover: #f04a34;
+
+  --cor-sidebar: #0b0f19;
+  --cor-sidebar-link: #9ca3af;
+  --cor-sidebar-hover: #1f2937;
+
+  --cor-ocupado: #166534;
+  --cor-ocupado-texto: #bbf7d0;
+  --cor-selecionado: #1d4ed8;
+  --cor-selecionado-texto: #bfdbfe;
+
+  --cor-sucesso: #4ade80;
+  --cor-erro: #f87171;
+}
+
 * {
   margin: 0;
   padding: 0;
@@ -6,11 +59,13 @@
 
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f6f8;
+  background-color: var(--cor-fundo);
+  color: var(--cor-texto);
 }
 
 button,
 input,
 select {
   font: inherit;
+  color: inherit;
 }
