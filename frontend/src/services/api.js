@@ -32,7 +32,6 @@ export const apiAlunos = {
   listar: () => api("/alunos"),
   cadastrar: (dados) => api("/alunos", { method: "POST", body: dados }),
   excluir: (id) => api(`/alunos/${id}`, { method: "DELETE" }),
-  urlPdf: (id) => `${BASE}/alunos/${id}/aulas/pdf`,
 };
 
 export const apiInstrutores = {

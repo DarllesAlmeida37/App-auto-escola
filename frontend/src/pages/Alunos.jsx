@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiAgendamentos, apiAlunos } from "../services/api";
 import { formatarData } from "../utils/datas";
+import { IconeLixeira, IconeWhatsApp } from "../components/Icones";
+import ConfirmacaoModal from "../components/ConfirmacaoModal";
 
 function Alunos() {
   const [nome, setNome] = useState("");
@@ -10,6 +12,7 @@ function Alunos() {
   const [tipoMensagem, setTipoMensagem] = useState("erro");
   const [alunos, setAlunos] = useState([]);
   const [mostrarLista, setMostrarLista] = useState(false);
+  const [confirmandoAluno, setConfirmandoAluno] = useState(null);
 
   function mostrar(mensagemTexto, tipo = "erro") {
     setMensagem(mensagemTexto);
@@ -90,27 +93,28 @@ function Alunos() {
     }
   }
 
-  async function handleDelete(aluno) {
-    const confirmou = window.confirm(
-      `Excluir o aluno ${aluno.nome}? As aulas agendadas dele também serão removidas.`,
-    );
+  function handleDelete(aluno) {
+    setConfirmandoAluno(aluno);
+  }
 
-    if (!confirmou) {
+  async function confirmarExclusao() {
+    if (!confirmandoAluno) {
       return;
     }
 
     try {
-      const dados = await apiAlunos.excluir(aluno.id);
+      const dados = await apiAlunos.excluir(confirmandoAluno.id);
 
       mostrar(dados.mensagem, "sucesso");
       buscarAlunos();
     } catch (erro) {
       mostrar(erro.message);
+    } finally {
+      setConfirmandoAluno(null);
     }
   }
 
-  // Gera o PDF das aulas do aluno e abre o WhatsApp com um resumo pronto.
-  // O PDF é anexado manualmente (o WhatsApp não permite anexar via link).
+  // Abre o WhatsApp do aluno com o resumo das aulas pronto para enviar.
   async function handleWhatsApp(aluno) {
     try {
       const aulas = await apiAgendamentos.listar({ alunoId: aluno.id });
@@ -127,9 +131,6 @@ function Alunos() {
 
       const texto = `Olá, ${aluno.nome}! Aqui está o resumo das suas aulas na Auto Escola:\n\n${linhas.join("\n")}\n\nTotal: ${aulas.length} aula(s).`;
 
-      // Abre o PDF (o navegador baixa/imprime) e o WhatsApp do aluno
-      window.open(apiAlunos.urlPdf(aluno.id), "_blank");
-
       const telefoneNumeros = aluno.telefone.replace(/\D/g, "");
 
       window.open(
@@ -137,7 +138,7 @@ function Alunos() {
         "_blank",
       );
 
-      mostrar("PDF gerado e WhatsApp aberto!", "sucesso");
+      mostrar("WhatsApp aberto com o resumo das aulas!", "sucesso");
     } catch (erro) {
       mostrar(erro.message);
     }
@@ -223,18 +224,20 @@ function Alunos() {
 
                   <td>
                     <button
-                      className="botao botao-pequeno"
+                      className="botao botao-pequeno icone-whatsapp"
                       type="button"
                       onClick={() => handleWhatsApp(aluno)}
                     >
-                      Baixar em PDF
+                      <IconeWhatsApp tamanho={16} />
+                      Enviar pelo WhatsApp
                     </button>{" "}
                     <button
-                      className="botao botao-perigo botao-pequeno"
+                      className="botao-icone botao-icone-perigo"
                       type="button"
+                      title="Excluir aluno"
                       onClick={() => handleDelete(aluno)}
                     >
-                      Excluir aluno
+                      <IconeLixeira tamanho={18} />
                     </button>
                   </td>
                 </tr>
@@ -242,6 +245,18 @@ function Alunos() {
             </tbody>
           </table>
         ))}
+
+      <ConfirmacaoModal
+        aberto={Boolean(confirmandoAluno)}
+        titulo="Excluir aluno"
+        mensagem={
+          confirmandoAluno
+            ? `Excluir o aluno ${confirmandoAluno.nome}? As aulas agendadas dele também serão removidas.`
+            : ""
+        }
+        onConfirmar={confirmarExclusao}
+        onCancelar={() => setConfirmandoAluno(null)}
+      />
     </div>
   );
 }

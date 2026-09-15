@@ -1,5 +1,5 @@
 .header {
-  height: 130px;
+  height: 135px;
   background-color: var(--cor-primaria);
   display: flex;
   align-items: center;
@@ -10,8 +10,10 @@
 }
 
 .image {
-  width: 25rem;
+  width: 20rem;
   max-width: 40vw;
+  flex-shrink: 1;
+  min-width: 0;
   border-radius: 0.4rem;
 }
 
@@ -23,19 +25,46 @@
 
 .usuario {
   color: #ffffff;
+  font-size: 20px;
   font-weight: bold;
 }
 
 .sair {
-  padding: 8px 18px;
-  border: 1px solid #ffffff;
-  border-radius: 6px;
-  background-color: transparent;
+  font-size: 20px;
+  font-weight: 500;
+  padding: 12px 16px;
+  border: none;
+  border-radius: 10px;
+  background-color: var(--cor-primaria);
   color: #ffffff;
   cursor: pointer;
+  transition: 0.4s;
 }
 
 .sair:hover {
-  background-color: #ffffff;
-  color: var(--cor-primaria);
+  background-color: #ffffff5c;
+  color: #fff;
+}
+
+/* Celular: header compacto para a logo não quebrar */
+@media (max-width: 768px) {
+  .header {
+    height: auto;
+    padding: 10px 14px;
+    gap: 10px;
+  }
+
+  .image {
+    width: 9rem;
+    max-width: 52vw;
+  }
+
+  .usuario {
+    font-size: 14px;
+  }
+
+  .sair {
+    font-size: 14px;
+    padding: 8px 12px;
+  }
 }

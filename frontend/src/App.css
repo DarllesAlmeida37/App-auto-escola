@@ -329,3 +329,215 @@
   border-radius: 3px;
   border: 1px solid var(--cor-borda);
 }
+
+/* ---------------- Botões de ícone (transparentes) ---------------- */
+
+.botao-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  background-color: transparent;
+  border: none;
+  cursor: pointer;
+  color: inherit;
+}
+
+.botao-icone:hover {
+  opacity: 0.75;
+}
+
+/* Lixeira/cancelar: ícone vermelho com fundo transparente */
+.botao-icone-perigo {
+  color: var(--cor-erro);
+}
+
+.icone-veiculo {
+  display: inline-flex;
+  align-items: center;
+  vertical-align: middle;
+  margin-left: 6px;
+}
+
+.icone-whatsapp {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* ---------------- Botões de tema (transparentes) ---------------- */
+
+.botoes-tema {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.botao-tema {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--cor-texto-suave);
+  cursor: pointer;
+}
+
+.botao-tema:hover {
+  color: var(--cor-texto);
+  border-color: var(--cor-texto-suave);
+}
+
+.botao-tema.ativo {
+  color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+}
+
+/* ---------------- Botão expansível (Segurança) ---------------- */
+
+.botao-expansivel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  background-color: transparent;
+  color: var(--cor-texto);
+  cursor: pointer;
+  font-weight: bold;
+}
+
+.botao-expansivel:hover {
+  border-color: var(--cor-primaria);
+  color: var(--cor-primaria);
+}
+
+.botao-expansivel .rotulo-botao {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.conteudo-expansivel {
+  border-top: 1px solid var(--cor-borda);
+  margin-top: 16px;
+  padding-top: 16px;
+}
+
+/* ---------------- Modal de confirmação ---------------- */
+
+.modal-fundo {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 100;
+}
+
+.modal-cartao {
+  width: 100%;
+  max-width: 380px;
+  background-color: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-radius: 12px;
+  padding: 24px;
+  text-align: center;
+}
+
+.modal-cartao h3 {
+  margin: 10px 0 8px;
+}
+
+.modal-cartao p {
+  color: var(--cor-texto-suave);
+  font-size: 0.95rem;
+  line-height: 1.45;
+  margin-bottom: 20px;
+}
+
+.modal-icone {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  background-color: color-mix(in srgb, var(--cor-erro) 12%, transparent);
+  color: var(--cor-erro);
+}
+
+.modal-acoes {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+/* ---------------- Lixeira flutuante (agendamentos) ---------------- */
+
+.botao-flutuante-lixeira {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  width: 62px;
+  height: 62px;
+  border-radius: 50%;
+  border: 2px solid var(--cor-erro);
+  background-color: var(--cor-painel);
+  color: var(--cor-erro);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+}
+
+.botao-flutuante-lixeira:hover {
+  background-color: var(--cor-erro);
+  color: #ffffff;
+}
+
+/* Aula ocupada selecionada (aguardando cancelamento) */
+.slot-ocupado-selecionado {
+  outline: 3px solid var(--cor-erro);
+  outline-offset: -3px;
+}
+
+/* ---------------- Responsividade ---------------- */
+
+@media (max-width: 768px) {
+  .content main {
+    padding: 16px;
+  }
+
+  .content main h2 {
+    font-size: 1.25rem;
+  }
+
+  .grade-horarios {
+    grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  }
+
+  /* Tabelas com rolagem horizontal no celular */
+  .tabela {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .linha-campos .campo {
+    min-width: 140px;
+  }
+
+  .login-logo {
+    max-width: 220px;
+  }
+}

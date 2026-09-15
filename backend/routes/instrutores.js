@@ -67,7 +67,7 @@ router.post("/", async (req, res) => {
 
     const novoInstrutor = await prisma.instrutor.create({
       data: {
-        nome: nome.trim(),
+        nome: nome.trim().toUpperCase(),
         cpf: cpfNormalizado,
       },
     });

@@ -1,6 +1,8 @@
 import { useEffect, useState } from "react";
 import { apiAgendamentos, apiAlunos, apiInstrutores } from "../services/api";
 import TabelaHorarios from "../components/TabelaHorarios";
+import ConfirmacaoModal from "../components/ConfirmacaoModal";
+import { IconeLixeira } from "../components/Icones";
 import {
   agruparPorData,
   domingoDaSemana,
@@ -38,6 +40,11 @@ function Agendamentos() {
   const [instrutorFiltro, setInstrutorFiltro] = useState("");
   const [resultado, setResultado] = useState([]);
   const [horariosVer, setHorariosVer] = useState([]);
+  const [horariosPorData, setHorariosPorData] = useState(new Map());
+
+  // Aula selecionada para cancelar (pela lixeira flutuante)
+  const [selecionadoCancelar, setSelecionadoCancelar] = useState(null);
+  const [confirmando, setConfirmando] = useState(null);
 
   useEffect(() => {
     Promise.all([apiAlunos.listar(), apiInstrutores.listar()])
@@ -186,12 +193,26 @@ function Agendamentos() {
       const agendamentos = await apiAgendamentos.listar(montarFiltros());
 
       setResultado(agendamentos);
+      setSelecionadoCancelar(null);
+      setConfirmando(null);
 
-      // No modo dia, também carrega a grade completa de horários do dia
       if (periodo === "dia") {
         const dadosHorarios = await apiAgendamentos.horarios(dataFiltro);
 
         setHorariosVer(dadosHorarios.horarios || []);
+      } else {
+        // Carrega a grade de horários de cada data que possui aulas
+        const datas = [...new Set(agendamentos.map((a) => a.data.slice(0, 10)))];
+
+        const resultados = await Promise.all(
+          datas.map(async (dia) => {
+            const dadosHorarios = await apiAgendamentos.horarios(dia);
+
+            return [dia, dadosHorarios.horarios || []];
+          }),
+        );
+
+        setHorariosPorData(new Map(resultados));
       }
 
       mostrar("");
@@ -200,25 +221,58 @@ function Agendamentos() {
     }
   }
 
-  async function handleCancelar(agendamento) {
-    const confirmou = window.confirm(
-      `Cancelar a aula de ${agendamento.aluno.nome} às ${agendamento.horario} (${formatarData(agendamento.data)})?`,
-    );
-
-    if (!confirmou) {
+  async function confirmarCancelamento() {
+    if (!confirmando) {
       return;
     }
 
     try {
-      const dados = await apiAgendamentos.cancelar(agendamento.id);
+      const dados = await apiAgendamentos.cancelar(confirmando.id);
 
       mostrar(dados.mensagem, "sucesso");
 
       await carregarResultado();
-      await carregarTabelaDia(data);
     } catch (erro) {
       mostrar(erro.message);
+    } finally {
+      setConfirmando(null);
     }
+  }
+
+  // Instrutores a exibir no modo ver: todos (como a aba Início)
+  // ou apenas o selecionado no filtro.
+  function instrutoresVisiveis(agendamentosDaData = null) {
+    if (instrutorFiltro) {
+      return instrutores.filter(
+        (instrutor) => instrutor.id === Number(instrutorFiltro),
+      );
+    }
+
+    // Se informado, mostra apenas instrutores com aula naquela data
+    if (agendamentosDaData) {
+      const ids = new Set(agendamentosDaData.map((a) => a.instrutorId));
+
+      return instrutores.filter((instrutor) => ids.has(instrutor.id));
+    }
+
+    return instrutores;
+  }
+
+  function gradeDoInstrutor(instrutor, agendamentosDoDia, horariosDoDia, chave) {
+    return (
+      <div className="cartao" key={chave}>
+        <h3>{instrutor.nome}</h3>
+
+        <TabelaHorarios
+          horarios={horariosDoDia}
+          agendamentos={agendamentosDoDia}
+          instrutorId={instrutor.id}
+          selecionavelOcupado
+          ocupadoSelecionado={selecionadoCancelar}
+          onSelecionarOcupado={setSelecionadoCancelar}
+        />
+      </div>
+    );
   }
 
   // ---------------------------------------------------------------
@@ -392,63 +446,100 @@ function Agendamentos() {
             </button>
           </div>
 
-          {periodo === "dia" ? (
-            <div className="cartao">
-              <h3>Agendamentos de {formatarData(dataFiltro)}</h3>
+          <div className="legenda">
+            <span>
+              <span
+                className="amostra"
+                style={{ backgroundColor: "var(--cor-ocupado)" }}
+              />{" "}
+              Ocupado
+            </span>
+            <span>
+              <span
+                className="amostra"
+                style={{ backgroundColor: "var(--cor-painel)" }}
+              />{" "}
+              Livre
+            </span>
+          </div>
 
-              <TabelaHorarios
-                horarios={horariosVer}
-                agendamentos={resultado}
-                mostrarCancelar
-                onCancelar={handleCancelar}
-              />
+          <p className="texto-ajuda">
+            Toque em uma aula (verde) para selecioná-la e depois use a
+            lixeira no canto da tela para cancelar.
+          </p>
+
+          {periodo === "dia" ? (
+            <div>
+              <h3 style={{ marginBottom: 12 }}>
+                Agendamentos de {formatarData(dataFiltro)}
+              </h3>
+
+              {resultado.length === 0 && instrutoresVisiveis().length === 0 ? (
+                <div className="cartao">
+                  <p className="lista-vazia">
+                    Nenhum instrutor cadastrado neste filtro.
+                  </p>
+                </div>
+              ) : (
+                instrutoresVisiveis().map((instrutor) =>
+                  gradeDoInstrutor(
+                    instrutor,
+                    resultado,
+                    horariosVer,
+                    instrutor.id,
+                  ),
+                )
+              )}
             </div>
           ) : resultado.length === 0 ? (
             <div className="cartao">
               <p className="lista-vazia">Nenhum agendamento no período.</p>
             </div>
           ) : (
-            agruparPorData(resultado).map(([dia, agendamentos]) => (
-              <div className="cartao grupo-datas" key={dia}>
-                <h4>{formatarData(dia)}</h4>
+            agruparPorData(resultado).map(([dia, agendamentosDoDia]) => {
+              const horariosDoDia = horariosPorData.get(dia) || [];
 
-                <table className="tabela">
-                  <thead>
-                    <tr>
-                      <th>Horário</th>
-                      <th>Aluno</th>
-                      <th>Instrutor</th>
-                      <th>Veículo</th>
-                      <th>Ações</th>
-                    </tr>
-                  </thead>
+              return (
+                <div className="grupo-datas" key={dia}>
+                  <h4 style={{ marginBottom: 12 }}>{formatarData(dia)}</h4>
 
-                  <tbody>
-                    {agendamentos.map((agendamento) => (
-                      <tr key={agendamento.id}>
-                        <td>{agendamento.horario}</td>
-                        <td>{agendamento.aluno.nome}</td>
-                        <td>{agendamento.instrutor.nome}</td>
-                        <td>{agendamento.veiculo}</td>
+                  {instrutoresVisiveis(agendamentosDoDia).map((instrutor) =>
+                    gradeDoInstrutor(
+                      instrutor,
+                      agendamentosDoDia,
+                      horariosDoDia,
+                      `${dia}-${instrutor.id}`,
+                    ),
+                  )}
+                </div>
+              );
+            })
+          )}
 
-                        <td>
-                          <button
-                            className="botao botao-perigo botao-pequeno"
-                            type="button"
-                            onClick={() => handleCancelar(agendamento)}
-                          >
-                            Cancelar
-                          </button>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            ))
+          {selecionadoCancelar && (
+            <button
+              type="button"
+              className="botao-flutuante-lixeira"
+              title="Cancelar aula selecionada"
+              onClick={() => setConfirmando(selecionadoCancelar)}
+            >
+              <IconeLixeira tamanho={26} />
+            </button>
           )}
         </div>
       )}
+
+      <ConfirmacaoModal
+        aberto={Boolean(confirmando)}
+        titulo="Cancelar aula"
+        mensagem={
+          confirmando
+            ? `Cancelar a aula de ${confirmando.aluno.nome} às ${confirmando.horario} (${formatarData(confirmando.data)})?`
+            : ""
+        }
+        onConfirmar={confirmarCancelamento}
+        onCancelar={() => setConfirmando(null)}
+      />
     </div>
   );
 }

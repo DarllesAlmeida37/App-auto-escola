@@ -1,12 +1,16 @@
+import { IconeCarro, IconeMoto } from "./Icones";
+
 // Grade de horários do dia.
 //
 // - Verde claro: horário já ocupado (instrutor ou aluno).
-// - Azul: horário selecionado pelo usuário.
+// - Azul: horário selecionado pelo usuário (modo agendar).
 // - Branco: horário livre.
 //
 // Modos:
-//   selecionavel  → clicar alterna a seleção (máx. 5, controlado pela página)
-//   mostrarCancelar → ocupados ganham botão de cancelar aula
+//   selecionavel → clicar alterna a seleção de horários livres
+//                  (máx. 5, controlado pela página)
+//   selecionavelOcupado → clicar num horário ocupado o seleciona
+//                  (para cancelar pela lixeira flutuante da página)
 function TabelaHorarios({
   horarios,
   agendamentos,
@@ -15,8 +19,9 @@ function TabelaHorarios({
   selecionavel = false,
   selecionados = [],
   onAlternar = null,
-  mostrarCancelar = false,
-  onCancelar = null,
+  selecionavelOcupado = false,
+  ocupadoSelecionado = null,
+  onSelecionarOcupado = null,
 }) {
   function ocupacoesDoHorario(inicio) {
     return agendamentos.filter(
@@ -58,17 +63,38 @@ function TabelaHorarios({
           const indisponivel = ocupados.length > 0 || Boolean(ocupadoPeloAluno);
           const selecionado = selecionados.includes(item.inicio);
 
+          const ocupadoSelecionadoAqui =
+            selecionavelOcupado &&
+            ocupados.some(
+              (agendamento) => agendamento.id === ocupadoSelecionado?.id,
+            );
+
           let classe = "slot slot-livre";
 
           if (selecionado) {
             classe = "slot slot-selecionado";
           } else if (indisponivel) {
-            classe = "slot slot-ocupado";
+            classe = ocupadoSelecionadoAqui
+              ? "slot slot-ocupado slot-ocupado-selecionado"
+              : "slot slot-ocupado";
           }
 
           function handleClick() {
             if (selecionavel && !indisponivel && onAlternar) {
               onAlternar(item.inicio);
+              return;
+            }
+
+            if (selecionavelOcupado && onSelecionarOcupado) {
+              // Se o horário tem uma aula, seleciona ela para cancelar;
+              // se não tem, limpa a seleção.
+              const aula = ocupados[0] || null;
+
+              if (aula?.id === ocupadoSelecionado?.id) {
+                onSelecionarOcupado(null);
+              } else {
+                onSelecionarOcupado(aula);
+              }
             }
           }
 
@@ -78,8 +104,16 @@ function TabelaHorarios({
               key={item.inicio}
               className={classe}
               onClick={handleClick}
-              disabled={!selecionavel}
-              title={indisponivel ? "Horário ocupado" : "Clique para selecionar"}
+              disabled={!selecionavel && !selecionavelOcupado}
+              title={
+                selecionavelOcupado && indisponivel
+                  ? ocupadoSelecionadoAqui
+                    ? "Aula selecionada"
+                    : "Toque para selecionar a aula"
+                  : indisponivel
+                    ? "Horário ocupado"
+                    : "Clique para selecionar"
+              }
             >
               <strong>
                 {item.inicio} – {item.fim}
@@ -93,20 +127,18 @@ function TabelaHorarios({
 
               {ocupados.map((agendamento) => (
                 <span className="slot-detalhe" key={agendamento.id}>
-                  {agendamento.aluno.nome} · {agendamento.instrutor.nome} ·{" "}
-                  {agendamento.veiculo}
-                  {mostrarCancelar && onCancelar && (
-                    <button
-                      type="button"
-                      className="botao botao-perigo botao-pequeno"
-                      onClick={(evento) => {
-                        evento.stopPropagation();
-                        onCancelar(agendamento);
-                      }}
-                    >
-                      Cancelar
-                    </button>
-                  )}
+                  {agendamento.aluno.nome}
+
+                  <span
+                    className="icone-veiculo"
+                    title={agendamento.veiculo}
+                  >
+                    {agendamento.veiculo === "CARRO" ? (
+                      <IconeCarro tamanho={20} />
+                    ) : (
+                      <IconeMoto tamanho={20} />
+                    )}
+                  </span>
                 </span>
               ))}
 

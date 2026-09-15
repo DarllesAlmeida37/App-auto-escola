@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiInstrutores } from "../services/api";
+import { IconeLixeira } from "../components/Icones";
+import ConfirmacaoModal from "../components/ConfirmacaoModal";
 
 function Instrutores() {
   const [nome, setNome] = useState("");
@@ -7,6 +9,7 @@ function Instrutores() {
   const [mensagem, setMensagem] = useState("");
   const [tipoMensagem, setTipoMensagem] = useState("erro");
   const [instrutores, setInstrutores] = useState([]);
+  const [confirmandoInstrutor, setConfirmandoInstrutor] = useState(null);
 
   function mostrar(mensagemTexto, tipo = "erro") {
     setMensagem(mensagemTexto);
@@ -80,22 +83,24 @@ function Instrutores() {
     }
   }
 
-  async function handleDelete(instrutor) {
-    const confirmou = window.confirm(
-      `Excluir o instrutor ${instrutor.nome}? As aulas agendadas dele também serão removidas.`,
-    );
+  function handleDelete(instrutor) {
+    setConfirmandoInstrutor(instrutor);
+  }
 
-    if (!confirmou) {
+  async function confirmarExclusao() {
+    if (!confirmandoInstrutor) {
       return;
     }
 
     try {
-      const dados = await apiInstrutores.excluir(instrutor.id);
+      const dados = await apiInstrutores.excluir(confirmandoInstrutor.id);
 
       mostrar(dados.mensagem, "sucesso");
       buscarInstrutores();
     } catch (erro) {
       mostrar(erro.message);
+    } finally {
+      setConfirmandoInstrutor(null);
     }
   }
 
@@ -160,11 +165,12 @@ function Instrutores() {
 
                 <td>
                   <button
-                    className="botao botao-perigo botao-pequeno"
+                    className="botao-icone botao-icone-perigo"
                     type="button"
+                    title="Excluir instrutor"
                     onClick={() => handleDelete(instrutor)}
                   >
-                    Excluir
+                    <IconeLixeira tamanho={18} />
                   </button>
                 </td>
               </tr>
@@ -172,6 +178,18 @@ function Instrutores() {
           </tbody>
         </table>
       )}
+
+      <ConfirmacaoModal
+        aberto={Boolean(confirmandoInstrutor)}
+        titulo="Excluir instrutor"
+        mensagem={
+          confirmandoInstrutor
+            ? `Excluir o instrutor ${confirmandoInstrutor.nome}? As aulas agendadas dele também serão removidas.`
+            : ""
+        }
+        onConfirmar={confirmarExclusao}
+        onCancelar={() => setConfirmandoInstrutor(null)}
+      />
     </div>
   );
 }

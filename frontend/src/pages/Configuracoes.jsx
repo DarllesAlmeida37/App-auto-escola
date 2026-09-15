@@ -2,11 +2,13 @@ import { useState } from "react";
 import { useTema } from "../context/TemaContext";
 import { useAuth } from "../context/AuthContext";
 import { apiConfiguracoes } from "../services/api";
+import { IconeSol, IconeLua, IconeCadeado } from "../components/Icones";
 
 function Configuracoes() {
   const { tema, alternarTema } = useTema();
   const { logout } = useAuth();
 
+  const [mostrarSeguranca, setMostrarSeguranca] = useState(false);
   const [novaSenha, setNovaSenha] = useState("");
   const [confirmacao, setConfirmacao] = useState("");
   const [senhaAdmin, setSenhaAdmin] = useState("");
@@ -68,74 +70,90 @@ function Configuracoes() {
           Escolha a aparência do sistema: claro (Dia) ou escuro (Noite).
         </p>
 
-        <div className="acoes-pagina">
+        <div className="botoes-tema">
           <button
             type="button"
-            className={`botao ${tema === "dia" ? "botao-ativo" : ""}`}
+            className={`botao-tema ${tema === "dia" ? "ativo" : ""}`}
             onClick={() => alternarTema("dia")}
           >
-            ☀️ Dia
+            <IconeSol tamanho={22} />
+            Dia
           </button>
 
           <button
             type="button"
-            className={`botao ${tema === "noite" ? "botao-ativo" : ""}`}
+            className={`botao-tema ${tema === "noite" ? "ativo" : ""}`}
             onClick={() => alternarTema("noite")}
           >
-            🌙 Noite
+            <IconeLua tamanho={22} />
+            Noite
           </button>
         </div>
       </div>
 
       <div className="cartao">
-        <h3>Segurança</h3>
+        <button
+          type="button"
+          className="botao-expansivel"
+          onClick={() => setMostrarSeguranca(!mostrarSeguranca)}
+        >
+          <span className="rotulo-botao">
+            <IconeCadeado tamanho={20} />
+            Segurança
+          </span>
+          <span>{mostrarSeguranca ? "▲" : "▼"}</span>
+        </button>
 
-        <p className="texto-ajuda">
-          Cadastre uma nova senha de acesso ao sistema. Para isso, é
-          obrigatório informar a senha do <strong>Administrador Geral</strong>.
-        </p>
+        {mostrarSeguranca && (
+          <div className="conteudo-expansivel">
+            <p className="texto-ajuda">
+              Cadastre uma nova senha de acesso ao sistema. Para isso, é
+              obrigatório informar a senha do <strong>Administrador Geral</strong>.
+            </p>
 
-        <form onSubmit={handleCadastrarSenha}>
-          <div className="linha-campos">
-            <label className="campo">
-              <span>Nova senha</span>
-              <input
-                type="password"
-                value={novaSenha}
-                onChange={(evento) => setNovaSenha(evento.target.value)}
-              />
-            </label>
+            <form onSubmit={handleCadastrarSenha}>
+              <div className="linha-campos">
+                <label className="campo">
+                  <span>Nova senha</span>
+                  <input
+                    type="password"
+                    value={novaSenha}
+                    onChange={(evento) => setNovaSenha(evento.target.value)}
+                  />
+                </label>
 
-            <label className="campo">
-              <span>Confirmar nova senha</span>
-              <input
-                type="password"
-                value={confirmacao}
-                onChange={(evento) => setConfirmacao(evento.target.value)}
-              />
-            </label>
+                <label className="campo">
+                  <span>Confirmar nova senha</span>
+                  <input
+                    type="password"
+                    value={confirmacao}
+                    onChange={(evento) => setConfirmacao(evento.target.value)}
+                  />
+                </label>
 
-            <label className="campo">
-              <span>Senha do Administrador Geral</span>
-              <input
-                type="password"
-                value={senhaAdmin}
-                onChange={(evento) => setSenhaAdmin(evento.target.value)}
-              />
-            </label>
+                <label className="campo">
+                  <span>Senha do Administrador Geral</span>
+                  <input
+                    type="password"
+                    value={senhaAdmin}
+                    onChange={(evento) => setSenhaAdmin(evento.target.value)}
+                  />
+                </label>
+              </div>
+
+              <button
+                className="botao botao-primario"
+                type="submit"
+                disabled={enviando}
+              >
+                {enviando ? "Cadastrando…" : "Cadastrar senha"}
+              </button>
+            </form>
+
+            {mensagem && (
+              <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
+            )}
           </div>
-
-          <button
-            className="botao botao-primario"
-            type="submit"
-            disabled={enviando}
-          >
-            {enviando ? "Cadastrando…" : "Cadastrar senha"}
-          </button>
-        </form>
-
-        {mensagem && (
-          <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
         )}
       </div>
 

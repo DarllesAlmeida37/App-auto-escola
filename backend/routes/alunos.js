@@ -2,7 +2,6 @@ const express = require("express");
 
 const prisma = require("../prismaClient");
 const { requireAuth } = require("../middleware/auth");
-const { gerarPdfAulas } = require("../services/pdf");
 
 const router = express.Router();
 
@@ -74,7 +73,7 @@ router.post("/", async (req, res) => {
 
     const novoAluno = await prisma.aluno.create({
       data: {
-        nome: nome.trim(),
+        nome: nome.trim().toUpperCase(),
         cpf: cpfNormalizado,
         telefone: telefone.trim(),
       },
@@ -96,57 +95,6 @@ router.post("/", async (req, res) => {
 
     res.status(500).json({
       mensagem: "Erro ao cadastrar aluno.",
-    });
-  }
-});
-
-// PDF com as aulas agendadas do aluno
-router.get("/:id/aulas/pdf", async (req, res) => {
-  try {
-    const id = Number(req.params.id);
-
-    if (!Number.isInteger(id) || id <= 0) {
-      return res.status(400).json({
-        mensagem: "ID do aluno inválido.",
-      });
-    }
-
-    const aluno = await prisma.aluno.findUnique({
-      where: {
-        id,
-      },
-    });
-
-    if (!aluno) {
-      return res.status(404).json({
-        mensagem: "Aluno não encontrado.",
-      });
-    }
-
-    const aulas = await prisma.agendamento.findMany({
-      where: {
-        alunoId: id,
-      },
-      include: {
-        instrutor: true,
-      },
-      orderBy: [{ data: "asc" }, { horario: "asc" }],
-    });
-
-    const pdf = await gerarPdfAulas(aluno, aulas);
-
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition",
-      `attachment; filename="aulas-${aluno.nome.replace(/\s+/g, "-")}.pdf"`,
-    );
-
-    res.send(pdf);
-  } catch (error) {
-    console.error(error);
-
-    res.status(500).json({
-      mensagem: "Erro ao gerar o PDF das aulas.",
     });
   }
 });

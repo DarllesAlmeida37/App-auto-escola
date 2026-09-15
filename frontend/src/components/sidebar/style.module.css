@@ -1,6 +1,14 @@
 .sidebar {
-  width: 240px;
+  width: 190px;
   min-height: 100vh;
+
+  /* Fixa a sidebar: ela acompanha a rolagem e fica sempre visível */
+  position: sticky;
+  top: 0;
+  align-self: flex-start;
+  height: 100vh;
+  overflow-y: auto;
+
   background-color: var(--cor-sidebar);
   color: #ffffff;
   padding: 25px 15px;
@@ -9,7 +17,9 @@
 .link {
   color: var(--cor-sidebar-link);
   text-decoration: none;
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 12px;
   padding: 14px 12px;
   margin-bottom: 5px;
   border-radius: 6px;
@@ -38,4 +48,54 @@
 
 .sidebar ul {
   list-style: none;
+}
+
+.icone {
+  display: inline-flex;
+  align-items: center;
+  flex-shrink: 0;
+}
+
+/* ---------------------------------------------------------------
+   Celular: a sidebar fecha e mostra apenas os ícones.
+   O nome da opção aparece num tooltip ao passar o mouse.
+--------------------------------------------------------------- */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 62px;
+    padding: 20px 8px;
+  }
+
+  .sidebar h2 {
+    display: none;
+  }
+
+  .link {
+    justify-content: center;
+    position: relative;
+    padding: 14px 0;
+    margin-bottom: 2px;
+  }
+
+  .rotulo {
+    display: none;
+  }
+
+  .link:hover .rotulo,
+  .link:focus-visible .rotulo {
+    display: block;
+    position: absolute;
+    left: 56px;
+    top: 50%;
+    transform: translateY(-50%);
+    background-color: var(--cor-painel);
+    color: var(--cor-texto);
+    border: 1px solid var(--cor-borda);
+    border-radius: 6px;
+    padding: 8px 12px;
+    white-space: nowrap;
+    font-size: 0.9rem;
+    z-index: 20;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.25);
+  }
 }
