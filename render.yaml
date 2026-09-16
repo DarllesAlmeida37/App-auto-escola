@@ -16,6 +16,7 @@ services:
       && npm --prefix frontend install --include=dev
       && npm --prefix frontend run build
       && cd backend
+      && npx prisma generate
       && npx prisma migrate deploy
 
     startCommand: node backend/server.js
