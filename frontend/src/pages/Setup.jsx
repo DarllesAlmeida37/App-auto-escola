@@ -68,7 +68,7 @@ function Setup() {
   return (
     <div className="login-pagina">
       <form className="login-cartao" onSubmit={handleSubmit}>
-        <img className="login-logo" src="/logo.jpeg" alt="Logo Auto Escola" />
+        <img className="login-logo" src="/logo.png" alt="Logo Auto Escola" />
 
         <h2>Configuração inicial</h2>
 
