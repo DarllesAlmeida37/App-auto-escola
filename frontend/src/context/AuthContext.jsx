@@ -53,7 +53,8 @@ export function AuthProvider({ children }) {
   // sobrevive ao fechamento). O F5 (reload) mantém o usuário logado.
   useEffect(() => {
     function aoFecharPagina() {
-      const navegacao = performance.getEntriesByType("navigation")[0];
+      const entradas = performance.getEntriesByType("navigation");
+      const navegacao = entradas[entradas.length - 1];
 
       if (navegacao && navegacao.type === "reload") {
         return;

@@ -328,7 +328,7 @@ function Agendamentos() {
       {modo === "agendar" ? (
         <div className="cartao">
           <form onSubmit={handleAgendar}>
-            <div className="linha-campos">
+            <div className="linha-campos linha-campos-agendar">
               <label className="campo campo-curto">
                 <span>CPF do aluno</span>
                 <input

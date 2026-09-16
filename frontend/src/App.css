@@ -545,7 +545,7 @@
 }
 
 .campo-curto input {
-  width: 13ch;
+  width: 16ch;
 }
 
 .campo-curto .texto-ajuda {
@@ -553,6 +553,15 @@
   overflow: hidden;
   text-overflow: ellipsis;
   max-width: 170px;
+}
+
+/* ---------------- Linha de campos do agendamento ----------------
+   Campos com mínimo menor para os 4 ficarem na mesma linha no
+   desktop/notebook; em telas menores quebram com responsividade. */
+
+.linha-campos-agendar .campo {
+  flex: 1 1 130px;
+  min-width: 120px;
 }
 
 /* ---------------- Divisor entre seções ---------------- */
