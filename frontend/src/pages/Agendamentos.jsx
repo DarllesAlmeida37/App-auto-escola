@@ -202,7 +202,9 @@ function Agendamentos() {
         setHorariosVer(dadosHorarios.horarios || []);
       } else {
         // Carrega a grade de horários de cada data que possui aulas
-        const datas = [...new Set(agendamentos.map((a) => a.data.slice(0, 10)))];
+        const datas = [
+          ...new Set(agendamentos.map((a) => a.data.slice(0, 10))),
+        ];
 
         const resultados = await Promise.all(
           datas.map(async (dia) => {
@@ -258,7 +260,12 @@ function Agendamentos() {
     return instrutores;
   }
 
-  function gradeDoInstrutor(instrutor, agendamentosDoDia, horariosDoDia, chave) {
+  function gradeDoInstrutor(
+    instrutor,
+    agendamentosDoDia,
+    horariosDoDia,
+    chave,
+  ) {
     return (
       <div className="cartao" key={chave}>
         <h3>{instrutor.nome}</h3>
@@ -298,7 +305,7 @@ function Agendamentos() {
             carregarResultado();
           }}
         >
-          Mostrar agendamentos do dia
+          Exibir agendamentos
         </button>
       </div>
 
@@ -413,13 +420,13 @@ function Agendamentos() {
                 <span>{periodo === "mes" ? "Mês de referência" : "Data"}</span>
                 <input
                   type={periodo === "mes" ? "month" : "date"}
-                  value={periodo === "mes" ? dataFiltro.slice(0, 7) : dataFiltro}
+                  value={
+                    periodo === "mes" ? dataFiltro.slice(0, 7) : dataFiltro
+                  }
                   onChange={(evento) => {
                     const valor = evento.target.value;
 
-                    setDataFiltro(
-                      periodo === "mes" ? `${valor}-01` : valor,
-                    );
+                    setDataFiltro(periodo === "mes" ? `${valor}-01` : valor);
                   }}
                 />
               </label>
@@ -464,8 +471,8 @@ function Agendamentos() {
           </div>
 
           <p className="texto-ajuda">
-            Toque em uma aula (verde) para selecioná-la e depois use a
-            lixeira no canto da tela para cancelar.
+            Toque em uma aula (verde) para selecioná-la e depois use a lixeira
+            no canto da tela para cancelar.
           </p>
 
           {periodo === "dia" ? (

@@ -117,6 +117,7 @@ function Instrutores() {
                 type="text"
                 value={nome}
                 onChange={(evento) => setNome(evento.target.value)}
+                placeholder="Nome do instrutor"
               />
             </label>
 
@@ -136,9 +137,7 @@ function Instrutores() {
           </button>
         </form>
 
-        {mensagem && (
-          <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
-        )}
+        {mensagem && <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>}
       </div>
 
       <h3 style={{ marginBottom: 12 }}>Instrutores Cadastrados</h3>

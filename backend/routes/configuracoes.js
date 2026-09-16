@@ -71,4 +71,91 @@ router.post("/senhas", async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------
+// Exclui uma senha de acesso.
+// Exige que a senha a excluir seja válida e que a senha do
+// Administrador Geral seja informada para confirmar.
+// ---------------------------------------------------------------
+
+router.post("/senhas/excluir", async (req, res) => {
+  try {
+    const { senhaExcluir, senhaAdmin } = req.body;
+
+    if (!senhaExcluir || typeof senhaExcluir !== "string") {
+      return res.status(400).json({
+        mensagem: "Informe a senha que deseja excluir.",
+      });
+    }
+
+    if (!senhaAdmin || typeof senhaAdmin !== "string") {
+      return res.status(400).json({
+        mensagem: "Informe a senha do Administrador Geral.",
+      });
+    }
+
+    const senhas = await prisma.senhaAcesso.findMany();
+
+    // Nunca deixa o sistema sem nenhuma senha de acesso
+    if (senhas.length <= 1) {
+      return res.status(400).json({
+        mensagem:
+          "Não é possível excluir a última senha de acesso do sistema.",
+      });
+    }
+
+    // A senha a excluir precisa existir
+    let senhaEncontrada = null;
+
+    for (const registro of senhas) {
+      if (await bcrypt.compare(senhaExcluir, registro.senhaHash)) {
+        senhaEncontrada = registro;
+
+        break;
+      }
+    }
+
+    if (!senhaEncontrada) {
+      return res.status(404).json({
+        mensagem: "Senha de acesso não encontrada.",
+      });
+    }
+
+    // Exige a senha do Administrador Geral
+    const adminGeral = await prisma.adminGeral.findFirst();
+
+    if (!adminGeral) {
+      return res.status(409).json({
+        mensagem: "A senha-mestra ainda não foi configurada.",
+      });
+    }
+
+    const senhaAdminValida = await bcrypt.compare(
+      senhaAdmin,
+      adminGeral.senhaHash,
+    );
+
+    if (!senhaAdminValida) {
+      return res.status(403).json({
+        mensagem: "Senha do Administrador Geral incorreta.",
+      });
+    }
+
+    await prisma.senhaAcesso.delete({
+      where: {
+        id: senhaEncontrada.id,
+      },
+    });
+
+    res.json({
+      mensagem: "Senha de acesso excluída com sucesso!",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      mensagem: "Erro ao excluir a senha.",
+    });
+  }
+});
+
 module.exports = router;

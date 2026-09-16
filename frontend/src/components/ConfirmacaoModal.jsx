@@ -1,7 +1,14 @@
 import { IconeLixeira } from "./Icones";
 
-// Modal de confirmação usado em todas as exclusões do sistema.
-function ConfirmacaoModal({ aberto, titulo, mensagem, onConfirmar, onCancelar }) {
+// Modal de confirmação usado em todas as ações destrutivas do sistema.
+function ConfirmacaoModal({
+  aberto,
+  titulo,
+  mensagem,
+  rotuloConfirmar = "Sim, excluir",
+  onConfirmar,
+  onCancelar,
+}) {
   if (!aberto) {
     return null;
   }
@@ -32,7 +39,7 @@ function ConfirmacaoModal({ aberto, titulo, mensagem, onConfirmar, onCancelar })
             type="button"
             onClick={onConfirmar}
           >
-            Sim, excluir
+            {rotuloConfirmar}
           </button>
         </div>
       </div>

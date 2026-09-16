@@ -61,13 +61,14 @@
 }
 
 .botao-perigo {
-  background-color: var(--cor-erro);
-  border-color: var(--cor-erro);
+  background-color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
   color: #ffffff;
 }
 
 .botao-perigo:hover {
-  filter: brightness(0.9);
+  background-color: var(--cor-primaria-hover);
+  border-color: var(--cor-primaria-hover);
 }
 
 .botao-ativo {
@@ -422,6 +423,12 @@
   gap: 10px;
 }
 
+/* Botão Segurança com metade da largura */
+.botao-expansivel-seguranca {
+  width: 50%;
+  min-width: 220px;
+}
+
 .conteudo-expansivel {
   border-top: 1px solid var(--cor-borda);
   margin-top: 16px;
@@ -511,6 +518,21 @@
   outline-offset: -3px;
 }
 
+/* ---------------- Campos da área de Segurança ----------------
+   Largura pela metade (2 campos por linha), altura normal. */
+
+.linha-campos .campo-seguranca {
+  flex: 0 0 calc(50% - 6px);
+  min-width: 140px;
+}
+
+/* ---------------- Divisor entre seções ---------------- */
+
+.divisor {
+  border-top: 1px solid var(--cor-borda);
+  margin: 20px 0;
+}
+
 /* ---------------- Responsividade ---------------- */
 
 @media (max-width: 768px) {
@@ -539,5 +561,9 @@
 
   .login-logo {
     max-width: 220px;
+  }
+
+  .botao-expansivel-seguranca {
+    width: 100%;
   }
 }

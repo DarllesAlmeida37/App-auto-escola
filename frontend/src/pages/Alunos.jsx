@@ -157,6 +157,7 @@ function Alunos() {
                 type="text"
                 value={nome}
                 onChange={(evento) => setNome(evento.target.value)}
+                placeholder="Nome do aluno"
               />
             </label>
 

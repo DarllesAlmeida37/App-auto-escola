@@ -26,6 +26,7 @@ export const apiAuth = {
   setup: (senha) => api("/auth/setup", { method: "POST", body: { senha } }),
   login: (senha) => api("/auth/login", { method: "POST", body: { senha } }),
   logout: () => api("/auth/logout", { method: "POST" }),
+  verificar: (senha) => api("/auth/verificar", { method: "POST", body: { senha } }),
 };
 
 export const apiAlunos = {
@@ -56,4 +57,6 @@ export const apiAgendamentos = {
 export const apiConfiguracoes = {
   cadastrarSenha: (dados) =>
     api("/configuracoes/senhas", { method: "POST", body: dados }),
+  excluirSenha: (dados) =>
+    api("/configuracoes/senhas/excluir", { method: "POST", body: dados }),
 };

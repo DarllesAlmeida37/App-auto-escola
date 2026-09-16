@@ -1,0 +1,34 @@
+# Configuração de deploy no Render (render.com)
+# O Render detecta este arquivo e configura tudo automaticamente.
+#
+# Um único serviço web roda o backend (Express) que também serve
+# o frontend compilado — mesma origem, cookies funcionam sem CORS.
+# O banco PostgreSQL fica no Neon (neon.tech), via DATABASE_URL.
+
+services:
+  - type: web
+    name: autoescola
+    runtime: node
+    plan: free
+
+    buildCommand: >-
+      npm --prefix backend install
+      && npm --prefix frontend install
+      && npm --prefix frontend run build
+      && cd backend
+      && npx prisma migrate deploy
+
+    startCommand: node backend/server.js
+
+    healthCheckPath: /api
+
+    envVars:
+      - key: NODE_ENV
+        value: production
+
+      - key: NODE_VERSION
+        value: "24"
+
+      # Preencha no painel do Render com a connection string do Neon
+      - key: DATABASE_URL
+        sync: false

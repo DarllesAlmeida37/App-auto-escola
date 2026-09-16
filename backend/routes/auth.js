@@ -165,6 +165,47 @@ router.post("/login", limiteLogin, async (req, res) => {
 });
 
 // ---------------------------------------------------------------
+// Verifica se a senha informada é uma senha de acesso válida.
+// Usada pela área de Segurança para liberar o acesso.
+// ---------------------------------------------------------------
+
+router.post("/verificar", requireAuth, async (req, res) => {
+  try {
+    const { senha } = req.body;
+
+    if (!senha || typeof senha !== "string") {
+      return res.status(400).json({
+        mensagem: "Informe a senha.",
+      });
+    }
+
+    const senhas = await prisma.senhaAcesso.findMany({
+      select: {
+        senhaHash: true,
+      },
+    });
+
+    for (const registro of senhas) {
+      if (await bcrypt.compare(senha, registro.senhaHash)) {
+        return res.json({
+          valida: true,
+        });
+      }
+    }
+
+    res.status(401).json({
+      mensagem: "Senha incorreta.",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      mensagem: "Erro ao verificar a senha.",
+    });
+  }
+});
+
+// ---------------------------------------------------------------
 // Logout: revoga a sessão no banco
 // ---------------------------------------------------------------
 

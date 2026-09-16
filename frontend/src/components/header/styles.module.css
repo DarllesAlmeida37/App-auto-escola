@@ -24,17 +24,17 @@
 }
 
 .usuario {
-  color: #ffffff;
+  color: #000000;
   font-size: 20px;
   font-weight: bold;
 }
 
 .sair {
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 500;
-  padding: 12px 16px;
-  border: none;
-  border-radius: 10px;
+  padding: 10px 14px;
+  border: 3px solid #ff8f8f5c;
+  border-radius: 12px;
   background-color: var(--cor-primaria);
   color: #ffffff;
   cursor: pointer;
@@ -42,7 +42,7 @@
 }
 
 .sair:hover {
-  background-color: #ffffff5c;
+  background-color: #fbcccca1;
   color: #fff;
 }
 
