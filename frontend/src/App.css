@@ -535,6 +535,26 @@
   min-width: 140px;
 }
 
+/* ---------------- Campo curto (CPF no agendamento) ----------------
+   Tamanho fixo de ~10 caracteres para não quebrar a linha no desktop. */
+
+.campo-curto {
+  flex: 0 0 auto;
+  min-width: 0;
+  max-width: 170px;
+}
+
+.campo-curto input {
+  width: 13ch;
+}
+
+.campo-curto .texto-ajuda {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 170px;
+}
+
 /* ---------------- Divisor entre seções ---------------- */
 
 .divisor {

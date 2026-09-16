@@ -30,10 +30,10 @@
 }
 
 .sair {
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 500;
   padding: 7px 10px;
-  border: 3px solid #ff8f8f5c;
+  border: 2px solid #ff8f8f5c;
   border-radius: 10px;
   background-color: var(--cor-primaria);
   color: #ffffff;
