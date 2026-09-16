@@ -12,8 +12,8 @@ services:
     plan: free
 
     buildCommand: >-
-      npm --prefix backend install
-      && npm --prefix frontend install
+      npm --prefix backend install --include=dev
+      && npm --prefix frontend install --include=dev
       && npm --prefix frontend run build
       && cd backend
       && npx prisma migrate deploy
