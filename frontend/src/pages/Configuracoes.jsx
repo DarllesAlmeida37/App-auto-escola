@@ -35,6 +35,10 @@ function Configuracoes() {
   function mostrar(mensagemTexto, tipo = "erro") {
     setMensagem(mensagemTexto);
     setTipoMensagem(tipo);
+
+    setTimeout(() => {
+      setMensagem("");
+    }, 3000);
   }
 
   // -------------------------------------------------------------
@@ -310,7 +314,7 @@ function Configuracoes() {
             className={`botao-tema ${tema === "dia" ? "ativo" : ""}`}
             onClick={() => alternarTema("dia")}
           >
-            <IconeSol tamanho={22} />
+            <IconeSol tamanho={17} />
             Dia
           </button>
 
@@ -319,7 +323,7 @@ function Configuracoes() {
             className={`botao-tema ${tema === "noite" ? "ativo" : ""}`}
             onClick={() => alternarTema("noite")}
           >
-            <IconeLua tamanho={22} />
+            <IconeLua tamanho={17} />
             Noite
           </button>
         </div>

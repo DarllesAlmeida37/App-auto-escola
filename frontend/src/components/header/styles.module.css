@@ -1,16 +1,16 @@
 .header {
-  height: 135px;
+  height: 110px;
   background-color: var(--cor-primaria);
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 16px;
+  gap: 14px;
 
-  padding: 0 30px;
+  padding: 0 24px;
 }
 
 .image {
-  width: 20rem;
+  width: 13rem;
   max-width: 40vw;
   flex-shrink: 1;
   min-width: 0;
@@ -25,16 +25,16 @@
 
 .usuario {
   color: #000000;
-  font-size: 20px;
+  font-size: 15px;
   font-weight: bold;
 }
 
 .sair {
-  font-size: 18px;
+  font-size: 13px;
   font-weight: 500;
-  padding: 10px 14px;
+  padding: 7px 10px;
   border: 3px solid #ff8f8f5c;
-  border-radius: 12px;
+  border-radius: 10px;
   background-color: var(--cor-primaria);
   color: #ffffff;
   cursor: pointer;

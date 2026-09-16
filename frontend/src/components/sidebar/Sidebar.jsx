@@ -9,22 +9,22 @@ import {
 } from "../Icones";
 
 const opcoes = [
-  { para: "/", fim: true, rotulo: "Início", icone: <IconeCasa tamanho={20} /> },
-  { para: "/alunos", rotulo: "Alunos", icone: <IconeAlunos tamanho={20} /> },
+  { para: "/", fim: true, rotulo: "Início", icone: <IconeCasa tamanho={16} /> },
+  { para: "/alunos", rotulo: "Alunos", icone: <IconeAlunos tamanho={16} /> },
   {
     para: "/instrutores",
     rotulo: "Instrutores",
-    icone: <IconeInstrutor tamanho={20} />,
+    icone: <IconeInstrutor tamanho={16} />,
   },
   {
     para: "/agendamentos",
     rotulo: "Agendamentos",
-    icone: <IconeCalendario tamanho={20} />,
+    icone: <IconeCalendario tamanho={16} />,
   },
   {
     para: "/configuracoes",
     rotulo: "Configurações",
-    icone: <IconeEngrenagem tamanho={20} />,
+    icone: <IconeEngrenagem tamanho={16} />,
   },
 ];
 

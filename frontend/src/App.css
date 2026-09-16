@@ -18,8 +18,14 @@
 }
 
 .content main h2 {
-  margin-bottom: 20px;
+  margin-bottom: 18px;
   text-align: center;
+  font-size: 1.25rem;
+}
+
+.content main h3,
+.cartao h3 {
+  font-size: 1.05rem;
 }
 
 .carregando {
@@ -32,7 +38,8 @@
 
 .botao {
   display: inline-block;
-  padding: 10px 18px;
+  padding: 7px 12px;
+  font-size: 0.88rem;
   border: 1px solid var(--cor-borda);
   border-radius: 6px;
   background-color: var(--cor-painel);
@@ -78,8 +85,8 @@
 }
 
 .botao-pequeno {
-  padding: 4px 10px;
-  font-size: 0.85rem;
+  padding: 4px 8px;
+  font-size: 0.8rem;
 }
 
 /* ---------------- Cartões e formulários ---------------- */
@@ -104,14 +111,15 @@
 .campo span {
   display: block;
   margin-bottom: 4px;
-  font-size: 0.9rem;
+  font-size: 0.8rem;
   color: var(--cor-texto-suave);
 }
 
 .campo input,
 .campo select {
   width: 100%;
-  padding: 9px 10px;
+  padding: 7px 8px;
+  font-size: 0.88rem;
   border: 1px solid var(--cor-borda);
   border-radius: 6px;
   background-color: var(--cor-campo);
@@ -187,30 +195,30 @@
 
 .grade-horarios {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-  gap: 8px;
-  margin: 12px 0;
+  grid-template-columns: repeat(auto-fill, minmax(135px, 1fr));
+  gap: 7px;
+  margin: 10px 0;
 }
 
 .slot {
   display: flex;
   flex-direction: column;
   gap: 2px;
-  padding: 10px;
+  padding: 8px;
   border: 1px solid var(--cor-borda);
   border-radius: 6px;
   background-color: var(--cor-painel);
-  font-size: 0.85rem;
+  font-size: 0.82rem;
   text-align: center;
 }
 
 .slot strong {
-  font-size: 0.9rem;
+  font-size: 0.85rem;
 }
 
 .slot .slot-detalhe {
   color: var(--cor-texto-suave);
-  font-size: 0.78rem;
+  font-size: 0.75rem;
 }
 
 .slot-livre {
@@ -271,7 +279,7 @@
 
 .login-logo {
   width: 100%;
-  max-width: 280px;
+  max-width: 220px;
   border-radius: 8px;
   margin-bottom: 16px;
 }
@@ -377,13 +385,14 @@
 .botao-tema {
   display: inline-flex;
   align-items: center;
-  gap: 8px;
-  padding: 8px 16px;
+  gap: 6px;
+  padding: 5px 10px;
   border: 1px solid var(--cor-borda);
-  border-radius: 8px;
+  border-radius: 6px;
   background-color: transparent;
   color: var(--cor-texto-suave);
   cursor: pointer;
+  font-size: 0.85rem;
 }
 
 .botao-tema:hover {

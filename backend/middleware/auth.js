@@ -14,6 +14,10 @@ const {
 
 // Cria uma sessão no banco e devolve o cookie httpOnly no cabeçalho.
 // O cookie fica inacessível via JavaScript (proteção contra XSS).
+//
+// Sem Max-Age o cookie é "de sessão": o navegador o apaga quando é
+// fechado — assim, fechar o site exige novo login na próxima visita.
+// A expiração de 12h continua valendo no servidor (tabela sessoes).
 async function criarSessao(res) {
   const token = gerarToken();
   const expiraEm = new Date(Date.now() + DURACAO_SESSAO_MS);
@@ -29,9 +33,7 @@ async function criarSessao(res) {
 
   res.setHeader(
     "Set-Cookie",
-    `${NOME_COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/; Max-Age=${Math.floor(
-      DURACAO_SESSAO_MS / 1000,
-    )}${seguro}`,
+    `${NOME_COOKIE}=${token}; HttpOnly; SameSite=Strict; Path=/${seguro}`,
   );
 }
 

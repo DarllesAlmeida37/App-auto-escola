@@ -119,7 +119,7 @@ function TabelaHorarios({
                 {item.inicio} – {item.fim}
               </strong>
 
-              {ocupadoPeloAluno && (
+              {ocupadoPeloAluno && ocupados.length === 0 && (
                 <span className="slot-detalhe">
                   Aluno ocupado: {ocupadoPeloAluno.aluno.nome}
                 </span>

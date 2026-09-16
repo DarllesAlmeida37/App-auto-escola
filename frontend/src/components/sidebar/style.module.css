@@ -1,5 +1,5 @@
 .sidebar {
-  width: 190px;
+  width: 156px;
   min-height: 100vh;
 
   /* Fixa a sidebar: ela acompanha a rolagem e fica sempre visível */
@@ -8,10 +8,9 @@
   align-self: flex-start;
   height: 100vh;
   overflow-y: auto;
-
   background-color: var(--cor-sidebar);
   color: #ffffff;
-  padding: 25px 15px;
+  padding: 20px 10px;
 }
 
 .link {
@@ -19,10 +18,16 @@
   text-decoration: none;
   display: flex;
   align-items: center;
-  gap: 12px;
-  padding: 14px 12px;
-  margin-bottom: 5px;
+  gap: 8px;
+  width: 100%;
+  padding: 11px 8px;
+  margin-bottom: 4px;
   border-radius: 6px;
+  font-size: 0.85rem;
+}
+
+.rotulo {
+  white-space: nowrap;
 }
 
 .link:hover {
@@ -42,8 +47,9 @@
 
 .sidebar h2 {
   text-align: center;
-  margin-bottom: 30px;
+  margin-bottom: 24px;
   color: #ebebeb;
+  font-size: 0.95rem;
 }
 
 .sidebar ul {
@@ -62,8 +68,8 @@
 --------------------------------------------------------------- */
 @media (max-width: 768px) {
   .sidebar {
-    width: 62px;
-    padding: 20px 8px;
+    width: 50px;
+    padding: 16px 4px;
   }
 
   .sidebar h2 {
@@ -73,7 +79,7 @@
   .link {
     justify-content: center;
     position: relative;
-    padding: 14px 0;
+    padding: 12px 0;
     margin-bottom: 2px;
   }
 
@@ -85,7 +91,7 @@
   .link:focus-visible .rotulo {
     display: block;
     position: absolute;
-    left: 56px;
+    left: 46px;
     top: 50%;
     transform: translateY(-50%);
     background-color: var(--cor-painel);

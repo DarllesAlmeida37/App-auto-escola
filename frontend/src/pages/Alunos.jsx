@@ -20,7 +20,7 @@ function Alunos() {
 
     setTimeout(() => {
       setMensagem("");
-    }, 4000);
+    }, 3000);
   }
 
   async function buscarAlunos() {

@@ -58,6 +58,10 @@ function Agendamentos() {
   function mostrar(mensagemTexto, tipo = "erro") {
     setMensagem(mensagemTexto);
     setTipoMensagem(tipo);
+
+    setTimeout(() => {
+      setMensagem("");
+    }, 3000);
   }
 
   // ---------------------------------------------------------------
@@ -154,7 +158,15 @@ function Agendamentos() {
 
       mostrar(dados.mensagem, "sucesso");
 
-      await carregarTabelaDia(data);
+      // Limpa todos os campos para o próximo agendamento
+      setCpfDigitado("");
+      setAlunoEncontrado(null);
+      setInstrutorId("");
+      setData("");
+      setVeiculo("");
+      setHorarios([]);
+      setAgendamentosDia([]);
+      setSelecionados([]);
     } catch (erro) {
       mostrar(erro.message);
     } finally {
@@ -309,7 +321,9 @@ function Agendamentos() {
         </button>
       </div>
 
-      {mensagem && <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>}
+      {modo !== "agendar" && mensagem && (
+        <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
+      )}
 
       {modo === "agendar" ? (
         <div className="cartao">
@@ -398,6 +412,10 @@ function Agendamentos() {
             >
               {agendando ? "Agendando…" : "Agendar aluno"}
             </button>
+
+            {mensagem && (
+              <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
+            )}
           </form>
         </div>
       ) : (

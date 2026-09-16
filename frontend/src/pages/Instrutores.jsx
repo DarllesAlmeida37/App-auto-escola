@@ -17,7 +17,7 @@ function Instrutores() {
 
     setTimeout(() => {
       setMensagem("");
-    }, 4000);
+    }, 3000);
   }
 
   async function buscarInstrutores() {
