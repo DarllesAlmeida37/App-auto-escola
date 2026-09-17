@@ -11,6 +11,7 @@ import {
   intervaloDoMes,
   segundaDaSemana,
 } from "../utils/datas";
+import { apenasNumeros } from "../utils/numeros";
 
 const MAX_HORARIOS = 5;
 
@@ -69,9 +70,10 @@ function Agendamentos() {
   // ---------------------------------------------------------------
 
   function localizarAluno(cpf) {
-    setCpfDigitado(cpf);
+    const digitos = apenasNumeros(cpf);
 
-    const digitos = cpf.replace(/\D/g, "");
+    setCpfDigitado(digitos);
+
     const encontrado = alunos.find(
       (aluno) => aluno.cpf.replace(/\D/g, "") === digitos && digitos.length > 0,
     );
@@ -333,6 +335,7 @@ function Agendamentos() {
                 <span>CPF do Aluno</span>
                 <input
                   type="text"
+                  inputMode="numeric"
                   value={cpfDigitado}
                   onChange={(evento) => localizarAluno(evento.target.value)}
                   placeholder="Digite aqui"

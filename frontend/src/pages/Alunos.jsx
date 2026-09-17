@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { apiAgendamentos, apiAlunos } from "../services/api";
 import { formatarData } from "../utils/datas";
+import { apenasNumeros } from "../utils/numeros";
 import { IconeLixeira, IconeWhatsApp } from "../components/Icones";
 import ConfirmacaoModal from "../components/ConfirmacaoModal";
 
@@ -165,9 +166,11 @@ function Alunos() {
               <span>CPF</span>
               <input
                 type="text"
+                inputMode="numeric"
                 value={cpf}
-                onChange={(evento) => setCpf(evento.target.value)}
+                onChange={(evento) => setCpf(apenasNumeros(evento.target.value))}
                 placeholder="Somente números"
+                maxLength={11}
               />
             </label>
 
@@ -175,9 +178,13 @@ function Alunos() {
               <span>Telefone</span>
               <input
                 type="text"
+                inputMode="numeric"
                 value={telefone}
-                onChange={(evento) => setTelefone(evento.target.value)}
+                onChange={(evento) =>
+                  setTelefone(apenasNumeros(evento.target.value))
+                }
                 placeholder="(99)9 99999999"
+                maxLength={11}
               />
             </label>
           </div>

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { apiInstrutores } from "../services/api";
+import { apenasNumeros } from "../utils/numeros";
 import { IconeLixeira } from "../components/Icones";
 import ConfirmacaoModal from "../components/ConfirmacaoModal";
 
@@ -125,9 +126,11 @@ function Instrutores() {
               <span>CPF</span>
               <input
                 type="text"
+                inputMode="numeric"
                 value={cpf}
-                onChange={(evento) => setCpf(evento.target.value)}
+                onChange={(evento) => setCpf(apenasNumeros(evento.target.value))}
                 placeholder="Somente números"
+                maxLength={11}
               />
             </label>
           </div>
