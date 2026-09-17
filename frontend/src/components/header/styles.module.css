@@ -42,8 +42,9 @@
 }
 
 .sair:hover {
-  background-color: #fbcccca1;
-  color: #fff;
+  color: #151414;
+  background-color: #ffffffd4;
+  border: 2px solid #ffffff;
 }
 
 /* Celular: header compacto para a logo não quebrar */

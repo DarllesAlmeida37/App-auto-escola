@@ -20,9 +20,10 @@ export function AuthProvider({ children }) {
       .then((dados) => {
         const abaViva = sessionStorage.getItem(CHAVE_SESSAO_ABA) === "1";
 
-        // Cookie válido sem aba viva (navegador fechado e reaberto):
-        // encerra a sessão e volta para o login.
-        if (dados.autenticado && !abaViva) {
+        // Aba fechada e reaberta: cookie restaurado, mas sem marcador
+        // de aba viva e com a sessão marcada como "fechando" →
+        // encerra a sessão de vez e volta para o login.
+        if (dados.autenticado && !abaViva && dados.fechando) {
           apiAuth.logout().finally(() =>
             setEstado({
               carregando: false,
@@ -32,6 +33,11 @@ export function AuthProvider({ children }) {
           );
 
           return;
+        }
+
+        // Registra esta aba como viva (sobrevive ao F5)
+        if (dados.autenticado) {
+          sessionStorage.setItem(CHAVE_SESSAO_ABA, "1");
         }
 
         setEstado({
@@ -49,18 +55,12 @@ export function AuthProvider({ children }) {
       );
   }, []);
 
-  // Fechar a aba/página encerra a sessão no servidor (sendBeacon
-  // sobrevive ao fechamento). O F5 (reload) mantém o usuário logado.
+  // Ao fechar a aba, marca a sessão como "fechando" no servidor
+  // (sendBeacon sobrevive ao fechamento). Se o F5 recarregar a página,
+  // a própria aba viva restaura a sessão nas próximas chamadas.
   useEffect(() => {
     function aoFecharPagina() {
-      const entradas = performance.getEntriesByType("navigation");
-      const navegacao = entradas[entradas.length - 1];
-
-      if (navegacao && navegacao.type === "reload") {
-        return;
-      }
-
-      navigator.sendBeacon("/api/auth/logout");
+      navigator.sendBeacon("/api/auth/fechar");
     }
 
     if (estado.autenticado) {

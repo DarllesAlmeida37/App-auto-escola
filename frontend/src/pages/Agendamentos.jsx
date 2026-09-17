@@ -330,12 +330,12 @@ function Agendamentos() {
           <form onSubmit={handleAgendar}>
             <div className="linha-campos linha-campos-agendar">
               <label className="campo campo-curto">
-                <span>CPF do aluno</span>
+                <span>CPF do Aluno</span>
                 <input
                   type="text"
                   value={cpfDigitado}
                   onChange={(evento) => localizarAluno(evento.target.value)}
-                  placeholder="Digite o CPF cadastrado"
+                  placeholder="Digite aqui"
                   maxLength={11}
                 />
                 {alunoEncontrado && (
@@ -381,7 +381,7 @@ function Agendamentos() {
                 />
               </label>
 
-              <label className="campo">
+              <label className="campo campo-veiculo">
                 <span>Veículo</span>
                 <select
                   value={veiculo}

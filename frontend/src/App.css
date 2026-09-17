@@ -40,7 +40,7 @@
   display: inline-block;
   padding: 7px 12px;
   font-size: 0.88rem;
-  border: 1px solid var(--cor-borda);
+  border: 2px solid var(--cor-borda);
   border-radius: 6px;
   background-color: var(--cor-painel);
   color: var(--cor-texto);
@@ -48,7 +48,8 @@
 }
 
 .botao:hover {
-  border-color: var(--cor-texto-suave);
+  border-color: var(--cor-primaria);
+  border: 2px solid var(--cor-primaria);
 }
 
 .botao:disabled {
@@ -562,6 +563,14 @@
 .linha-campos-agendar .campo {
   flex: 1 1 130px;
   min-width: 120px;
+}
+
+/* Veículo: largura fixa de ~14 caracteres — não estica
+   quando quebra para a linha de baixo. */
+.linha-campos-agendar .campo-veiculo {
+  flex: 0 0 14ch;
+  min-width: 0;
+  max-width: 14ch;
 }
 
 /* ---------------- Divisor entre seções ---------------- */

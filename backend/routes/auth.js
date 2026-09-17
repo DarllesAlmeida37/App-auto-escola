@@ -16,6 +16,7 @@ const {
   limiteLogin,
   registrarFalhaLogin,
   registrarSucessoLogin,
+  GRACE_FECHANDO_MS,
 } = require("../middleware/auth");
 
 const router = express.Router();
@@ -34,6 +35,7 @@ router.get("/status", async (req, res) => {
     const cookies = lerCookies(req.headers.cookie);
     const token = cookies[NOME_COOKIE];
     let autenticado = false;
+    let fechando = false;
 
     if (token) {
       const sessao = await prisma.sessao.findUnique({
@@ -43,17 +45,49 @@ router.get("/status", async (req, res) => {
       });
 
       autenticado = Boolean(sessao && sessao.expiraEm >= new Date());
+      fechando = Boolean(sessao && sessao.fechando);
     }
 
     res.json({
       precisaSetup: quantidadeAdmin === 0,
       autenticado,
+      fechando,
     });
   } catch (error) {
     console.error(error);
 
     res.status(500).json({
       mensagem: "Erro ao verificar o status do sistema.",
+    });
+  }
+});
+
+// ---------------------------------------------------------------
+// Marca a sessão como "fechando" quando a aba é fechada.
+// Se nenhuma página viva fizer uma requisição dentro da carência,
+// a sessão expira. O F5 restaura automaticamente.
+// ---------------------------------------------------------------
+
+router.post("/fechar", requireAuth, async (req, res) => {
+  try {
+    await prisma.sessao.update({
+      where: {
+        id: req.sessao.id,
+      },
+      data: {
+        fechando: true,
+        expiraEm: new Date(Date.now() + GRACE_FECHANDO_MS),
+      },
+    });
+
+    res.json({
+      mensagem: "Sessão marcada como fechando.",
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      mensagem: "Erro ao marcar a sessão.",
     });
   }
 });

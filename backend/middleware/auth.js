@@ -8,6 +8,12 @@ const {
   lerCookies,
 } = require("../utils/sessao");
 
+// Quando a aba é fechada, a sessão entra em "fechando" com esta
+// carência. Se nenhuma página viva fizer uma requisição nesse tempo,
+// a sessão expira. O F5 restaura automaticamente (a página recarregada
+// faz chamadas autenticadas dentro da carência).
+const GRACE_FECHANDO_MS = 5 * 60 * 1000;
+
 // ---------------------------------------------------------------
 // Sessões
 // ---------------------------------------------------------------
@@ -88,6 +94,33 @@ async function requireAuth(req, res, next) {
     });
   }
 
+  // Uma página viva acabou de usar a sessão: desfaz o "fechando"
+  // (marcado quando outra aba foi fechada) e renova a validade.
+  if (sessao.fechando) {
+    await prisma.sessao.update({
+      where: { id: sessao.id },
+      data: {
+        fechando: false,
+        expiraEm: new Date(Date.now() + DURACAO_SESSAO_MS),
+      },
+    });
+
+    sessao.fechando = false;
+    sessao.expiraEm = new Date(Date.now() + DURACAO_SESSAO_MS);
+  } else {
+    // Renovação deslizante: estende apenas quando falta menos de 1h
+    const restante = sessao.expiraEm.getTime() - Date.now();
+
+    if (restante < 60 * 60 * 1000) {
+      await prisma.sessao.update({
+        where: { id: sessao.id },
+        data: {
+          expiraEm: new Date(Date.now() + DURACAO_SESSAO_MS),
+        },
+      });
+    }
+  }
+
   req.sessao = sessao;
 
   next();
@@ -158,4 +191,5 @@ module.exports = {
   limiteLogin,
   registrarFalhaLogin,
   registrarSucessoLogin,
+  GRACE_FECHANDO_MS,
 };
