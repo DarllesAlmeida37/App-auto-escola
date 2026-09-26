@@ -14,6 +14,8 @@ function Alunos() {
   const [alunos, setAlunos] = useState([]);
   const [mostrarLista, setMostrarLista] = useState(false);
   const [confirmandoAluno, setConfirmandoAluno] = useState(null);
+  const [buscaCpf, setBuscaCpf] = useState("");
+  const [mostrarBusca, setMostrarBusca] = useState(false);
 
   function mostrar(mensagemTexto, tipo = "erro") {
     setMensagem(mensagemTexto);
@@ -57,6 +59,11 @@ function Alunos() {
       ativo = false;
     };
   }, []);
+
+  const alunosFiltrados =
+    buscaCpf !== ""
+      ? alunos.filter((aluno) => aluno.cpf.includes(buscaCpf))
+      : alunos;
 
   async function handleSubmit(evento) {
     evento.preventDefault();
@@ -205,53 +212,135 @@ function Alunos() {
         >
           {mostrarLista ? "Ocultar alunos" : "Ver alunos"}
         </button>
+
+        <button
+          className="botao"
+          type="button"
+          onClick={() => {
+            setMostrarBusca(!mostrarBusca);
+            setBuscaCpf("");
+          }}
+        >
+          Encontrar pelo CPF
+        </button>
       </div>
 
+      {mostrarBusca && (
+        <div className="cartao">
+          <label className="campo">
+            <span>CPF do aluno</span>
+            <input
+              type="text"
+              inputMode="numeric"
+              value={buscaCpf}
+              onChange={(evento) => setBuscaCpf(apenasNumeros(evento.target.value))}
+              placeholder="Digite o CPF"
+              maxLength={11}
+            />
+          </label>
+
+          {buscaCpf !== "" &&
+            (alunosFiltrados.length === 0 ? (
+              <p className="lista-vazia">Nenhum aluno encontrado com esse CPF.</p>
+            ) : (
+              alunosFiltrados.map((aluno) => (
+                <table className="tabela" key={aluno.id}>
+                  <thead>
+                    <tr>
+                      <th>Nome</th>
+                      <th>CPF</th>
+                      <th>Telefone</th>
+                      <th>Ações</th>
+                    </tr>
+                  </thead>
+
+                  <tbody>
+                    <tr>
+                      <td>{aluno.nome}</td>
+                      <td>{aluno.cpf}</td>
+                      <td>{aluno.telefone}</td>
+
+                      <td>
+                        <button
+                          className="botao botao-pequeno icone-whatsapp"
+                          type="button"
+                          onClick={() => handleWhatsApp(aluno)}
+                        >
+                          <IconeWhatsApp tamanho={16} />
+                          Enviar pelo WhatsApp
+                        </button>{" "}
+                        <button
+                          className="botao-icone botao-icone-perigo"
+                          type="button"
+                          title="Excluir aluno"
+                          onClick={() => handleDelete(aluno)}
+                        >
+                          <IconeLixeira tamanho={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  </tbody>
+                </table>
+              ))
+            ))}
+        </div>
+      )}
+
       {mostrarLista &&
+        !mostrarBusca &&
         (alunos.length === 0 ? (
           <div className="cartao">
             <p className="lista-vazia">Nenhum aluno cadastrado.</p>
           </div>
         ) : (
-          <table className="tabela">
-            <thead>
-              <tr>
-                <th>Nome</th>
-                <th>CPF</th>
-                <th>Telefone</th>
-                <th>Ações</th>
-              </tr>
-            </thead>
+          <div className="cartao">
+            <p className="texto-ajuda">
+              Mostrando os 12 primeiros de {alunos.length} aluno(s) — role a
+              tabela para ver os demais.
+            </p>
 
-            <tbody>
-              {alunos.map((aluno) => (
-                <tr key={aluno.id}>
-                  <td>{aluno.nome}</td>
-                  <td>{aluno.cpf}</td>
-                  <td>{aluno.telefone}</td>
+            <div className="tabela-rolagem">
+              <table className="tabela">
+                <thead>
+                  <tr>
+                    <th>Nome</th>
+                    <th>CPF</th>
+                    <th>Telefone</th>
+                    <th>Ações</th>
+                  </tr>
+                </thead>
 
-                  <td>
-                    <button
-                      className="botao botao-pequeno icone-whatsapp"
-                      type="button"
-                      onClick={() => handleWhatsApp(aluno)}
-                    >
-                      <IconeWhatsApp tamanho={16} />
-                      Enviar pelo WhatsApp
-                    </button>{" "}
-                    <button
-                      className="botao-icone botao-icone-perigo"
-                      type="button"
-                      title="Excluir aluno"
-                      onClick={() => handleDelete(aluno)}
-                    >
-                      <IconeLixeira tamanho={18} />
-                    </button>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+                <tbody>
+                  {alunos.map((aluno) => (
+                    <tr key={aluno.id}>
+                      <td>{aluno.nome}</td>
+                      <td>{aluno.cpf}</td>
+                      <td>{aluno.telefone}</td>
+
+                      <td>
+                        <button
+                          className="botao botao-pequeno icone-whatsapp"
+                          type="button"
+                          onClick={() => handleWhatsApp(aluno)}
+                        >
+                          <IconeWhatsApp tamanho={16} />
+                          Enviar pelo WhatsApp
+                        </button>{" "}
+                        <button
+                          className="botao-icone botao-icone-perigo"
+                          type="button"
+                          title="Excluir aluno"
+                          onClick={() => handleDelete(aluno)}
+                        >
+                          <IconeLixeira tamanho={18} />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         ))}
 
       <ConfirmacaoModal

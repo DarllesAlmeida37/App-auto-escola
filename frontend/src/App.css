@@ -573,6 +573,280 @@
   max-width: 14ch;
 }
 
+/* ---------------- Tabela com rolagem (lista de alunos) ---------------- */
+
+.tabela-rolagem {
+  max-height: 460px;
+  overflow-y: auto;
+  border-radius: 8px;
+}
+
+/* Financeiro: ~10 lançamentos visíveis e depois rolagem */
+.tabela-rolagem-financeiro {
+  max-height: 420px;
+}
+
+/* ---------------- Painel financeiro ---------------- */
+
+.painel-cards {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.painel-card {
+  flex: 1 1 180px;
+  background-color: var(--cor-painel);
+  border: 1px solid var(--cor-borda);
+  border-left: 4px solid var(--cor-primaria);
+  border-radius: 8px;
+  padding: 14px 16px;
+}
+
+.painel-card .painel-card-rotulo {
+  display: block;
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+  margin-bottom: 6px;
+}
+
+.painel-card .painel-card-valor {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: bold;
+}
+
+/* ---------------- Agendamento em lote ---------------- */
+
+.cartao-interno {
+  border: 1px solid var(--cor-borda);
+  border-radius: 8px;
+  padding: 14px;
+  margin-bottom: 14px;
+}
+
+.chip-data {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 5px 10px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 16px;
+  margin: 0 6px 8px 0;
+  font-size: 0.85rem;
+}
+
+.chip-data button {
+  border: none;
+  background: transparent;
+  color: var(--cor-erro);
+  cursor: pointer;
+  font-weight: bold;
+  padding: 0;
+}
+
+.botao-tipo {
+  padding: 2px 7px;
+  font-size: 0.72rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  color: inherit;
+}
+
+.botao-tipo.ativo {
+  background-color: var(--cor-primaria);
+  border-color: var(--cor-primaria);
+  color: #ffffff;
+}
+
+/* ---------------- Campos com largura padrão (16 caracteres) ---------------- */
+
+.campo-16ch {
+  flex: 0 0 auto;
+  min-width: 0;
+}
+
+.campo-16ch input {
+  width: 16ch;
+}
+
+/* ---------------- Painel financeiro ---------------- */
+
+.botao-verde {
+  background-color: var(--cor-sucesso);
+  border-color: var(--cor-sucesso);
+  color: #ffffff;
+}
+
+.botao-verde:hover {
+  filter: brightness(0.92);
+}
+
+.periodo-navegacao {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.periodo-nav-botao {
+  width: 28px;
+  height: 28px;
+  border: 1px solid var(--cor-borda);
+  border-radius: 50%;
+  font-size: 1rem;
+  line-height: 1;
+}
+
+.periodo-rotulo {
+  font-weight: bold;
+  font-size: 0.95rem;
+  min-width: 130px;
+  text-align: center;
+}
+
+.periodo-navegacao input {
+  padding: 5px 8px;
+  font-size: 0.85rem;
+  border: 1px solid var(--cor-borda);
+  border-radius: 6px;
+  background-color: var(--cor-campo);
+}
+
+.resumo-financeiro {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 24px;
+  align-items: center;
+}
+
+.saldo-valor.negativo {
+  color: var(--cor-primaria);
+}
+
+.mini-estatisticas {
+  display: flex;
+  gap: 22px;
+  flex-wrap: wrap;
+}
+
+.mini-estatistica {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  color: var(--cor-texto-suave);
+}
+
+.mini-estatistica strong {
+  font-size: 1rem;
+  color: var(--cor-texto);
+}
+
+.ponto {
+  display: inline-block;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.ponto-verde {
+  background-color: var(--cor-sucesso);
+}
+
+.ponto-vermelho {
+  background-color: var(--cor-primaria);
+}
+
+/* Medidor semicircular: o elemento memorável do painel */
+.medidor-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.medidor-externo {
+  width: 210px;
+  height: 107px;
+  overflow: hidden;
+  position: relative;
+}
+
+.medidor-preenchimento {
+  width: 210px;
+  height: 210px;
+  border-radius: 50%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.medidor-mascara {
+  width: 160px;
+  height: 160px;
+  border-radius: 50%;
+  background-color: var(--cor-painel);
+  position: absolute;
+  top: 25px;
+  left: 25px;
+}
+
+.medidor-centro {
+  position: absolute;
+  bottom: 8px;
+  left: 0;
+  right: 0;
+  text-align: center;
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+}
+
+.medidor-legenda {
+  display: flex;
+  gap: 16px;
+  margin-top: 8px;
+  font-size: 0.78rem;
+  color: var(--cor-texto-suave);
+}
+
+.medidor-legenda span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.ledger-cabecalho {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 14px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+
+.valor-entrada {
+  color: var(--cor-sucesso);
+}
+
+.valor-saida {
+  color: var(--cor-primaria);
+}
+
+@media (max-width: 680px) {
+  .resumo-financeiro {
+    grid-template-columns: 1fr;
+  }
+
+  .periodo-rotulo {
+    min-width: 0;
+  }
+}
+
 /* ---------------- Divisor entre seções ---------------- */
 
 .divisor {

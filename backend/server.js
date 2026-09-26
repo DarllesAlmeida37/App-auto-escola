@@ -9,6 +9,8 @@ const alunosRoutes = require("./routes/alunos");
 const instrutoresRoutes = require("./routes/instrutores");
 const agendamentosRoutes = require("./routes/agendamentos");
 const configuracoesRoutes = require("./routes/configuracoes");
+const veiculosRoutes = require("./routes/veiculos");
+const financeiroRoutes = require("./routes/financeiro");
 
 const app = express();
 
@@ -26,6 +28,8 @@ app.use("/api/alunos", alunosRoutes);
 app.use("/api/instrutores", instrutoresRoutes);
 app.use("/api/agendamentos", agendamentosRoutes);
 app.use("/api/configuracoes", configuracoesRoutes);
+app.use("/api/veiculos", veiculosRoutes);
+app.use("/api/financeiro", financeiroRoutes);
 
 app.get("/api", (req, res) => {
   res.json({

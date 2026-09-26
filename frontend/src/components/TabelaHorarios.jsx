@@ -9,8 +9,8 @@ import { IconeCarro, IconeMoto } from "./Icones";
 // Modos:
 //   selecionavel → clicar alterna a seleção de horários livres
 //                  (máx. 5, controlado pela página)
-//   selecionavelOcupado → clicar num horário ocupado o seleciona
-//                  (para cancelar pela lixeira flutuante da página)
+//   selecionavelOcupado → clicar em aulas ocupadas alterna a seleção
+//                  múltipla (para excluir várias de uma vez)
 function TabelaHorarios({
   horarios,
   agendamentos,
@@ -20,8 +20,8 @@ function TabelaHorarios({
   selecionados = [],
   onAlternar = null,
   selecionavelOcupado = false,
-  ocupadoSelecionado = null,
-  onSelecionarOcupado = null,
+  ocupadosSelecionados = [],
+  onAlternarOcupado = null,
 }) {
   function ocupacoesDoHorario(inicio) {
     return agendamentos.filter(
@@ -63,20 +63,19 @@ function TabelaHorarios({
           const indisponivel = ocupados.length > 0 || Boolean(ocupadoPeloAluno);
           const selecionado = selecionados.includes(item.inicio);
 
-          const ocupadoSelecionadoAqui =
-            selecionavelOcupado &&
-            ocupados.some(
-              (agendamento) => agendamento.id === ocupadoSelecionado?.id,
-            );
+          const selecionadosAqui = ocupados.filter((agendamento) =>
+            ocupadosSelecionados.includes(agendamento.id),
+          );
 
           let classe = "slot slot-livre";
 
           if (selecionado) {
             classe = "slot slot-selecionado";
           } else if (indisponivel) {
-            classe = ocupadoSelecionadoAqui
-              ? "slot slot-ocupado slot-ocupado-selecionado"
-              : "slot slot-ocupado";
+            classe =
+              selecionadosAqui.length > 0
+                ? "slot slot-ocupado slot-ocupado-selecionado"
+                : "slot slot-ocupado";
           }
 
           function handleClick() {
@@ -85,15 +84,10 @@ function TabelaHorarios({
               return;
             }
 
-            if (selecionavelOcupado && onSelecionarOcupado) {
-              // Se o horário tem uma aula, seleciona ela para cancelar;
-              // se não tem, limpa a seleção.
-              const aula = ocupados[0] || null;
-
-              if (aula?.id === ocupadoSelecionado?.id) {
-                onSelecionarOcupado(null);
-              } else {
-                onSelecionarOcupado(aula);
+            if (selecionavelOcupado && onAlternarOcupado) {
+              // Alterna a seleção de todas as aulas ocupadas deste horário
+              for (const agendamento of ocupados) {
+                onAlternarOcupado(agendamento);
               }
             }
           }
@@ -107,9 +101,7 @@ function TabelaHorarios({
               disabled={!selecionavel && !selecionavelOcupado}
               title={
                 selecionavelOcupado && indisponivel
-                  ? ocupadoSelecionadoAqui
-                    ? "Aula selecionada"
-                    : "Toque para selecionar a aula"
+                  ? "Toque para selecionar/desmarcar a aula"
                   : indisponivel
                     ? "Horário ocupado"
                     : "Clique para selecionar"
@@ -129,10 +121,7 @@ function TabelaHorarios({
                 <span className="slot-detalhe" key={agendamento.id}>
                   {agendamento.aluno.nome}
 
-                  <span
-                    className="icone-veiculo"
-                    title={agendamento.veiculo}
-                  >
+                  <span className="icone-veiculo" title={agendamento.veiculo}>
                     {agendamento.veiculo === "CARRO" ? (
                       <IconeCarro tamanho={20} />
                     ) : (

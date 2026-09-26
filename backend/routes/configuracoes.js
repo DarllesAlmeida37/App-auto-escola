@@ -158,4 +158,50 @@ router.post("/senhas/excluir", async (req, res) => {
   }
 });
 
+// ---------------------------------------------------------------
+// Verifica a senha do Administrador Geral.
+// Usada para liberar o painel Financeiro.
+// ---------------------------------------------------------------
+
+router.post("/verificar-admin", async (req, res) => {
+  try {
+    const { senhaAdmin } = req.body;
+
+    if (!senhaAdmin || typeof senhaAdmin !== "string") {
+      return res.status(400).json({
+        mensagem: "Informe a senha do Administrador Geral.",
+      });
+    }
+
+    const adminGeral = await prisma.adminGeral.findFirst();
+
+    if (!adminGeral) {
+      return res.status(409).json({
+        mensagem: "A senha-mestra ainda não foi configurada.",
+      });
+    }
+
+    const senhaAdminValida = await bcrypt.compare(
+      senhaAdmin,
+      adminGeral.senhaHash,
+    );
+
+    if (!senhaAdminValida) {
+      return res.status(403).json({
+        mensagem: "Senha do Administrador Geral incorreta.",
+      });
+    }
+
+    res.json({
+      valida: true,
+    });
+  } catch (error) {
+    console.error(error);
+
+    res.status(500).json({
+      mensagem: "Erro ao verificar a senha.",
+    });
+  }
+});
+
 module.exports = router;

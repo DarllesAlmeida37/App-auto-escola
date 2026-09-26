@@ -68,7 +68,7 @@ function Setup() {
   return (
     <div className="login-pagina">
       <form className="login-cartao" onSubmit={handleSubmit}>
-        <img className="login-logo" src="/logo.png" alt="Logo Auto Escola" />
+        <img className="login-logo" src="/logo.webp" alt="Logo Auto Escola" />
 
         <h2>Configuração inicial</h2>
 
@@ -77,7 +77,7 @@ function Setup() {
           exigida para cadastrar novas senhas de acesso na área de Segurança.
         </p>
 
-        <label className="campo">
+        <label className="campo campo-16ch">
           <span>Senha do Administrador Geral</span>
           <input
             type="password"
@@ -87,7 +87,7 @@ function Setup() {
           />
         </label>
 
-        <label className="campo">
+        <label className="campo campo-16ch">
           <span>Confirmar senha</span>
           <input
             type="password"

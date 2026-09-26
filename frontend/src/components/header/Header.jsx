@@ -6,7 +6,7 @@ function Header() {
 
   return (
     <header className={styles.header}>
-      <img className={styles.image} src="/logo.png" alt="Logo Auto Escola" />
+      <img className={styles.image} src="/logo.webp" alt="Logo Auto Escola" />
 
       <div className={styles.acoes}>
         <span className={styles.usuario}>CFC FORQUILHA</span>

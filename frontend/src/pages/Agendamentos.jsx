@@ -43,9 +43,18 @@ function Agendamentos() {
   const [horariosVer, setHorariosVer] = useState([]);
   const [horariosPorData, setHorariosPorData] = useState(new Map());
 
-  // Aula selecionada para cancelar (pela lixeira flutuante)
-  const [selecionadoCancelar, setSelecionadoCancelar] = useState(null);
-  const [confirmando, setConfirmando] = useState(null);
+  // Aulas selecionadas para excluir em lote (pela lixeira flutuante)
+  const [selecionadosExclusao, setSelecionadosExclusao] = useState([]);
+  const [confirmando, setConfirmando] = useState(false);
+
+  // Modo agendar em lote (múltiplas datas de uma vez)
+  const [loteDatas, setLoteDatas] = useState([]);
+  const [loteDataInput, setLoteDataInput] = useState("");
+  const [loteInstrutorId, setLoteInstrutorId] = useState("");
+  const [loteDisponibilidade, setLoteDisponibilidade] = useState(new Map());
+  const [loteSelecao, setLoteSelecao] = useState(new Map());
+  const [loteConflitos, setLoteConflitos] = useState([]);
+  const [loteEnviando, setLoteEnviando] = useState(false);
 
   useEffect(() => {
     Promise.all([apiAlunos.listar(), apiInstrutores.listar()])
@@ -207,8 +216,8 @@ function Agendamentos() {
       const agendamentos = await apiAgendamentos.listar(montarFiltros());
 
       setResultado(agendamentos);
-      setSelecionadoCancelar(null);
-      setConfirmando(null);
+      setSelecionadosExclusao([]);
+      setConfirmando(false);
 
       if (periodo === "dia") {
         const dadosHorarios = await apiAgendamentos.horarios(dataFiltro);
@@ -237,13 +246,21 @@ function Agendamentos() {
     }
   }
 
-  async function confirmarCancelamento() {
-    if (!confirmando) {
+  function alternarSelecao(agendamento) {
+    setSelecionadosExclusao((atuais) =>
+      atuais.includes(agendamento.id)
+        ? atuais.filter((id) => id !== agendamento.id)
+        : [...atuais, agendamento.id],
+    );
+  }
+
+  async function confirmarExclusaoLote() {
+    if (selecionadosExclusao.length === 0) {
       return;
     }
 
     try {
-      const dados = await apiAgendamentos.cancelar(confirmando.id);
+      const dados = await apiAgendamentos.excluirLote(selecionadosExclusao);
 
       mostrar(dados.mensagem, "sucesso");
 
@@ -251,7 +268,7 @@ function Agendamentos() {
     } catch (erro) {
       mostrar(erro.message);
     } finally {
-      setConfirmando(null);
+      setConfirmando(false);
     }
   }
 
@@ -289,11 +306,258 @@ function Agendamentos() {
           agendamentos={agendamentosDoDia}
           instrutorId={instrutor.id}
           selecionavelOcupado
-          ocupadoSelecionado={selecionadoCancelar}
-          onSelecionarOcupado={setSelecionadoCancelar}
+          ocupadosSelecionados={selecionadosExclusao}
+          onAlternarOcupado={alternarSelecao}
         />
       </div>
     );
+  }
+
+  // ---------------------------------------------------------------
+  // Modo agendar em lote
+  // ---------------------------------------------------------------
+
+  // Ao trocar de instrutor, recarrega os agendamentos de todas as
+  // datas do lote e remove da seleção os horários que ficaram ocupados
+  // para o instrutor recém-escolhido.
+  useEffect(() => {
+    if (loteInstrutorId === "") {
+      return;
+    }
+
+    async function atualizarDisponibilidade() {
+      const datas = [...loteDatas];
+
+      for (const dataISO of datas) {
+        await carregarDisponibilidadeLote(dataISO);
+      }
+
+      // Remove slots que ficaram ocupados para o instrutor escolhido
+      const ocupacoes = new Map();
+
+      for (const dataISO of datas) {
+        const disponibilidade = loteDisponibilidade.get(dataISO);
+
+        if (!disponibilidade) {
+          continue;
+        }
+
+        const ocupados = disponibilidade.agendamentos
+          .filter(
+            (agendamento) =>
+              agendamento.instrutorId === Number(loteInstrutorId),
+          )
+          .map((agendamento) => agendamento.horario);
+
+        ocupacoes.set(dataISO, ocupados);
+      }
+
+      setLoteSelecao((atual) => {
+        const novo = new Map(atual);
+
+        for (const [dataISO, ocupados] of ocupacoes) {
+          const lista = (novo.get(dataISO) || []).filter(
+            (slot) => !ocupados.includes(slot.horario),
+          );
+
+          novo.set(dataISO, lista);
+        }
+
+        return novo;
+      });
+    }
+
+    atualizarDisponibilidade();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [loteInstrutorId]);
+
+  async function adicionarDataLote() {
+    const nova = loteDataInput;
+
+    if (!nova) {
+      mostrar("Escolha uma data.");
+      return;
+    }
+
+    if (loteDatas.length >= 5) {
+      mostrar("O lote permite no máximo 5 datas diferentes.");
+      return;
+    }
+
+    if (loteDatas.includes(nova)) {
+      mostrar("Essa data já está no lote.");
+      return;
+    }
+
+    const diaSemana = new Date(`${nova}T12:00:00`).getDay();
+
+    if (diaSemana === 0) {
+      mostrar("Não é permitido agendar aos domingos.");
+      return;
+    }
+
+    setLoteDatas([...loteDatas, nova]);
+    setLoteDataInput("");
+    setLoteConflitos([]);
+
+    await carregarDisponibilidadeLote(nova);
+  }
+
+  async function carregarDisponibilidadeLote(dataISO) {
+    try {
+      const [dadosHorarios, agendamentos] = await Promise.all([
+        apiAgendamentos.horarios(dataISO),
+        apiAgendamentos.listar({ data: dataISO }),
+      ]);
+
+      setLoteDisponibilidade((atual) => {
+        const novo = new Map(atual);
+
+        novo.set(dataISO, {
+          horarios: dadosHorarios.horarios || [],
+          agendamentos,
+        });
+
+        return novo;
+      });
+    } catch (erro) {
+      mostrar(erro.message);
+    }
+  }
+
+  function removerDataLote(dataISO) {
+    setLoteDatas(loteDatas.filter((data) => data !== dataISO));
+
+    setLoteDisponibilidade((atual) => {
+      const novo = new Map(atual);
+      novo.delete(dataISO);
+      return novo;
+    });
+
+    setLoteSelecao((atual) => {
+      const novo = new Map(atual);
+      novo.delete(dataISO);
+      return novo;
+    });
+  }
+
+  function alternarSlotLote(dataISO, horario) {
+    setLoteSelecao((atual) => {
+      const novo = new Map(atual);
+      const lista = [...(novo.get(dataISO) || [])];
+      const existente = lista.find((slot) => slot.horario === horario);
+
+      if (existente) {
+        novo.set(dataISO, lista.filter((slot) => slot.horario !== horario));
+      } else {
+        if (lista.length >= 6) {
+          mostrar(`Máximo de 6 horários por data (${dataISO}).`);
+          return atual;
+        }
+
+        lista.push({ horario, tipoVeiculo: "CARRO" });
+        novo.set(dataISO, lista);
+      }
+
+      return novo;
+    });
+  }
+
+  function alternarTipoLote(dataISO, horario) {
+    setLoteSelecao((atual) => {
+      const novo = new Map(atual);
+      const lista = (novo.get(dataISO) || []).map((slot) =>
+        slot.horario === horario
+          ? {
+              ...slot,
+              tipoVeiculo: slot.tipoVeiculo === "CARRO" ? "MOTO" : "CARRO",
+            }
+          : slot,
+      );
+
+      novo.set(dataISO, lista);
+
+      return novo;
+    });
+  }
+
+  async function handleAgendarLote(evento) {
+    evento.preventDefault();
+
+    if (!alunoEncontrado) {
+      mostrar("Aluno não encontrado. Verifique o CPF.");
+      return;
+    }
+
+    if (!loteInstrutorId) {
+      mostrar("Selecione um instrutor.");
+      return;
+    }
+
+    const aulas = [];
+
+    for (const dataISO of loteDatas) {
+      for (const slot of loteSelecao.get(dataISO) || []) {
+        aulas.push({
+          data: dataISO,
+          horario: slot.horario,
+          instrutorId: Number(loteInstrutorId),
+          tipoVeiculo: slot.tipoVeiculo,
+        });
+      }
+    }
+
+    if (aulas.length === 0) {
+      mostrar("Selecione pelo menos um horário.");
+      return;
+    }
+
+    setLoteEnviando(true);
+    setLoteConflitos([]);
+
+    try {
+      const dados = await apiAgendamentos.agendarLote({
+        alunoId: alunoEncontrado.id,
+        aulas,
+      });
+
+      mostrar(dados.mensagem, "sucesso");
+
+      // Limpa tudo para o próximo lote
+      setCpfDigitado("");
+      setAlunoEncontrado(null);
+      setLoteInstrutorId("");
+      setLoteDatas([]);
+      setLoteDisponibilidade(new Map());
+      setLoteSelecao(new Map());
+    } catch (erro) {
+      mostrar(erro.message);
+
+      // Conflito: mantém a seleção intacta, remove apenas os slots
+      // que falharam e recarrega a disponibilidade deles.
+      const conflitos = erro.dados?.conflitos || [];
+
+      if (conflitos.length > 0) {
+        setLoteConflitos(conflitos);
+
+        for (const conflito of conflitos) {
+          setLoteSelecao((atual) => {
+            const novo = new Map(atual);
+            const lista = (novo.get(conflito.data) || []).filter(
+              (slot) => slot.horario !== conflito.horario,
+            );
+
+            novo.set(conflito.data, lista);
+
+            return novo;
+          });
+
+          await carregarDisponibilidadeLote(conflito.data);
+        }
+      }
+    } finally {
+      setLoteEnviando(false);
+    }
   }
 
   // ---------------------------------------------------------------
@@ -313,6 +577,14 @@ function Agendamentos() {
 
         <button
           type="button"
+          className={`botao ${modo === "lote" ? "botao-ativo" : ""}`}
+          onClick={() => setModo("lote")}
+        >
+          Agendar em lote
+        </button>
+
+        <button
+          type="button"
           className={`botao ${modo === "ver" ? "botao-ativo" : ""}`}
           onClick={() => {
             setModo("ver");
@@ -323,7 +595,7 @@ function Agendamentos() {
         </button>
       </div>
 
-      {modo !== "agendar" && mensagem && (
+      {modo === "ver" && mensagem && (
         <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
       )}
 
@@ -422,7 +694,7 @@ function Agendamentos() {
             )}
           </form>
         </div>
-      ) : (
+      ) : modo !== "lote" ? (
         <div>
           <div className="cartao">
             <div className="linha-campos">
@@ -493,8 +765,8 @@ function Agendamentos() {
           </div>
 
           <p className="texto-ajuda">
-            Toque em uma aula (verde) para selecioná-la e depois use a lixeira
-            no canto da tela para cancelar.
+            Toque nas aulas (verde) para selecionar várias e depois use a
+            lixeira no canto da tela para excluir.
           </p>
 
           {periodo === "dia" ? (
@@ -545,29 +817,233 @@ function Agendamentos() {
             })
           )}
 
-          {selecionadoCancelar && (
+          {selecionadosExclusao.length > 0 && (
             <button
               type="button"
               className="botao-flutuante-lixeira"
-              title="Cancelar aula selecionada"
-              onClick={() => setConfirmando(selecionadoCancelar)}
+              title="Excluir aulas selecionadas"
+              onClick={() => setConfirmando(true)}
             >
               <IconeLixeira tamanho={26} />
+              <span style={{ marginLeft: 6, fontWeight: "bold" }}>
+                {selecionadosExclusao.length}
+              </span>
             </button>
           )}
+        </div>
+      ) : null}
+
+      {modo === "lote" && (
+        <div className="cartao">
+          <form onSubmit={handleAgendarLote}>
+            <div className="linha-campos linha-campos-agendar">
+              <label className="campo campo-curto">
+                <span>CPF do Aluno</span>
+                <input
+                  type="text"
+                  inputMode="numeric"
+                  value={cpfDigitado}
+                  onChange={(evento) => localizarAluno(evento.target.value)}
+                  placeholder="Digite aqui"
+                  maxLength={11}
+                />
+                {alunoEncontrado && (
+                  <span className="texto-ajuda">
+                    Aluno: {alunoEncontrado.nome}
+                  </span>
+                )}
+              </label>
+
+              <label className="campo">
+                <span>Instrutor</span>
+                <select
+                  value={loteInstrutorId}
+                  onChange={(evento) => setLoteInstrutorId(evento.target.value)}
+                >
+                  <option value="">Selecione um instrutor</option>
+
+                  {instrutores.map((instrutor) => (
+                    <option key={instrutor.id} value={instrutor.id}>
+                      {instrutor.nome}
+                    </option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="campo">
+                <span>Adicionar data</span>
+                <input
+                  type="date"
+                  min={hojeISO()}
+                  value={loteDataInput}
+                  onChange={(evento) => setLoteDataInput(evento.target.value)}
+                />
+              </label>
+
+              <label className="campo">
+                <span>&nbsp;</span>
+                <button
+                  className="botao"
+                  type="button"
+                  onClick={adicionarDataLote}
+                >
+                  Adicionar data
+                </button>
+              </label>
+            </div>
+
+            {loteDatas.length > 0 && (
+              <p className="texto-ajuda">
+                Datas do lote ({loteDatas.length}/5):
+              </p>
+            )}
+
+            <div>
+              {loteDatas.map((dataISO) => (
+                <span className="chip-data" key={dataISO}>
+                  {formatarData(dataISO)}
+                  <button
+                    type="button"
+                    title="Remover data"
+                    onClick={() => removerDataLote(dataISO)}
+                  >
+                    ✕
+                  </button>
+                </span>
+              ))}
+            </div>
+
+            {loteDatas.map((dataISO) => {
+              const disponibilidade = loteDisponibilidade.get(dataISO);
+              const selecaoDaData = loteSelecao.get(dataISO) || [];
+
+              return (
+                <div className="cartao-interno" key={dataISO}>
+                  <h3>
+                    {formatarData(dataISO)} — {selecaoDaData.length}/6 horários
+                  </h3>
+
+                  {!disponibilidade ? (
+                    <p className="lista-vazia">Carregando…</p>
+                  ) : (
+                    <div className="grade-horarios">
+                      {disponibilidade.horarios.map((item) => {
+                        const ocupado = disponibilidade.agendamentos.some(
+                          (agendamento) =>
+                            agendamento.horario === item.inicio &&
+                            (agendamento.instrutorId ===
+                              Number(loteInstrutorId) ||
+                              agendamento.alunoId === alunoEncontrado?.id),
+                        );
+                        const selecionado = selecaoDaData.find(
+                          (slot) => slot.horario === item.inicio,
+                        );
+
+                        let classe = "slot slot-livre";
+
+                        if (ocupado) {
+                          classe = "slot slot-ocupado";
+                        } else if (selecionado) {
+                          classe = "slot slot-selecionado";
+                        }
+
+                        return (
+                          <div
+                            key={item.inicio}
+                            className={classe}
+                            style={{ cursor: ocupado ? "not-allowed" : "pointer" }}
+                            onClick={() => {
+                              if (!ocupado) {
+                                alternarSlotLote(dataISO, item.inicio);
+                              }
+                            }}
+                          >
+                            <strong>
+                              {item.inicio} – {item.fim}
+                            </strong>
+
+                            {ocupado && (
+                              <span className="slot-detalhe">Ocupado</span>
+                            )}
+
+                            {selecionado && (
+                              <span
+                                className="slot-detalhe"
+                                onClick={(evento) => evento.stopPropagation()}
+                              >
+                                <button
+                                  type="button"
+                                  className={`botao-tipo ${
+                                    selecionado.tipoVeiculo === "CARRO"
+                                      ? "ativo"
+                                      : ""
+                                  }`}
+                                  onClick={() =>
+                                    alternarTipoLote(dataISO, item.inicio)
+                                  }
+                                >
+                                  Carro
+                                </button>{" "}
+                                <button
+                                  type="button"
+                                  className={`botao-tipo ${
+                                    selecionado.tipoVeiculo === "MOTO"
+                                      ? "ativo"
+                                      : ""
+                                  }`}
+                                  onClick={() =>
+                                    alternarTipoLote(dataISO, item.inicio)
+                                  }
+                                >
+                                  Moto
+                                </button>
+                              </span>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+
+            {loteConflitos.length > 0 && (
+              <div className="mensagem erro">
+                <strong>Horários em conflito (nenhuma aula foi criada):</strong>
+
+                <ul style={{ marginLeft: 18, marginTop: 6 }}>
+                  {loteConflitos.map((conflito, indice) => (
+                    <li key={indice}>
+                      {formatarData(conflito.data)} às {conflito.horario} —{" "}
+                      {conflito.motivo}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            )}
+
+            <button
+              className="botao botao-primario"
+              type="submit"
+              disabled={loteEnviando}
+            >
+              {loteEnviando ? "Agendando…" : "Agendar lote"}
+            </button>
+
+            {mensagem && (
+              <p className={`mensagem ${tipoMensagem}`}>{mensagem}</p>
+            )}
+          </form>
         </div>
       )}
 
       <ConfirmacaoModal
-        aberto={Boolean(confirmando)}
-        titulo="Cancelar aula"
-        mensagem={
-          confirmando
-            ? `Cancelar a aula de ${confirmando.aluno.nome} às ${confirmando.horario} (${formatarData(confirmando.data)})?`
-            : ""
-        }
-        onConfirmar={confirmarCancelamento}
-        onCancelar={() => setConfirmando(null)}
+        aberto={confirmando}
+        titulo="Excluir aulas"
+        mensagem={`Excluir ${selecionadosExclusao.length} aula(s) selecionada(s)? Essa ação não pode ser desfeita.`}
+        onConfirmar={confirmarExclusaoLote}
+        onCancelar={() => setConfirmando(false)}
       />
     </div>
   );

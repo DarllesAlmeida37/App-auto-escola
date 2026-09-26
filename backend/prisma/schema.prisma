@@ -11,6 +11,11 @@ enum TipoVeiculo {
   MOTO
 }
 
+enum TipoLancamento {
+  ENTRADA
+  SAIDA
+}
+
 model Aluno {
   id           Int           @id @default(autoincrement())
   nome         String
@@ -20,6 +25,7 @@ model Aluno {
   updatedAt    DateTime      @updatedAt
 
   agendamentos Agendamento[]
+  lotes        AgendamentoLote[]
 }
 
 model Instrutor {
@@ -40,15 +46,26 @@ model Agendamento {
 
   alunoId     Int
   instrutorId Int
+  loteId      Int?
 
   aluno       Aluno       @relation(fields: [alunoId], references: [id], onDelete: Cascade)
   instrutor   Instrutor   @relation(fields: [instrutorId], references: [id], onDelete: Cascade)
+  lote        AgendamentoLote? @relation(fields: [loteId], references: [id], onDelete: Cascade)
 
   createdAt   DateTime    @default(now())
   updatedAt   DateTime    @updatedAt
 
   @@unique([alunoId, data, horario])
   @@unique([instrutorId, data, horario])
+}
+
+model AgendamentoLote {
+  id       Int           @id @default(autoincrement())
+  alunoId  Int
+  criadoEm DateTime      @default(now())
+
+  aluno    Aluno         @relation(fields: [alunoId], references: [id], onDelete: Cascade)
+  aulas    Agendamento[]
 }
 
 model SenhaAcesso {
@@ -69,4 +86,33 @@ model Sessao {
   criadoEm  DateTime @default(now())
   expiraEm  DateTime
   fechando  Boolean  @default(false)
+}
+
+model Veiculo {
+  id        Int        @id @default(autoincrement())
+  placa     String     @unique
+  cor       String
+  tipo      TipoVeiculo
+  createdAt DateTime   @default(now())
+
+  despesas  Despesa[]
+}
+
+model Despesa {
+  id        Int      @id @default(autoincrement())
+  valor     Decimal  @db.Decimal(10, 2)
+  descricao String
+  data      DateTime @db.Date
+  veiculoId Int
+  veiculo   Veiculo  @relation(fields: [veiculoId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+}
+
+model Lancamento {
+  id        Int            @id @default(autoincrement())
+  tipo      TipoLancamento
+  valor     Decimal        @db.Decimal(10, 2)
+  descricao String
+  data      DateTime       @db.Date
+  criadoEm  DateTime       @default(now())
 }

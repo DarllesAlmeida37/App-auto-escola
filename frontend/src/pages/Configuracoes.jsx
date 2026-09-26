@@ -173,7 +173,7 @@ function Configuracoes() {
 
         <form onSubmit={handleDesbloquear}>
           <div className="linha-campos">
-            <label className="campo campo-seguranca">
+            <label className="campo campo-seguranca campo-16ch">
               <span>Senha de acesso</span>
               <input
                 type="password"
@@ -213,7 +213,7 @@ function Configuracoes() {
 
         <form onSubmit={handleCriarSenha}>
           <div className="linha-campos">
-            <label className="campo campo-seguranca">
+            <label className="campo campo-seguranca campo-16ch">
               <span>Nova senha</span>
               <input
                 type="password"
@@ -222,7 +222,7 @@ function Configuracoes() {
               />
             </label>
 
-            <label className="campo campo-seguranca">
+            <label className="campo campo-seguranca campo-16ch">
               <span>Confirmar nova senha</span>
               <input
                 type="password"
@@ -231,7 +231,7 @@ function Configuracoes() {
               />
             </label>
 
-            <label className="campo campo-seguranca">
+            <label className="campo campo-seguranca campo-16ch">
               <span>Senha do Administrador Geral</span>
               <input
                 type="password"
@@ -258,7 +258,7 @@ function Configuracoes() {
 
         <form onSubmit={handleExcluirSenha}>
           <div className="linha-campos">
-            <label className="campo campo-seguranca">
+            <label className="campo campo-seguranca campo-16ch">
               <span>Senha que deseja excluir</span>
               <input
                 type="password"
@@ -267,7 +267,7 @@ function Configuracoes() {
               />
             </label>
 
-            <label className="campo campo-seguranca">
+            <label className="campo campo-seguranca campo-16ch">
               <span>Senha do Administrador Geral</span>
               <input
                 type="password"

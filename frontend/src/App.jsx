@@ -8,6 +8,8 @@ import Dashboard from "./pages/Dashboard.jsx";
 import Alunos from "./pages/Alunos.jsx";
 import Instrutores from "./pages/Instrutores.jsx";
 import Agendamentos from "./pages/Agendamentos.jsx";
+import Veiculos from "./pages/Veiculos.jsx";
+import Financeiro from "./pages/Financeiro.jsx";
 import Configuracoes from "./pages/Configuracoes.jsx";
 import "./App.css";
 
@@ -62,6 +64,22 @@ function App() {
           element={
             <PaginaLayout>
               <Agendamentos />
+            </PaginaLayout>
+          }
+        />
+        <Route
+          path="/veiculos"
+          element={
+            <PaginaLayout>
+              <Veiculos />
+            </PaginaLayout>
+          }
+        />
+        <Route
+          path="/financeiro"
+          element={
+            <PaginaLayout>
+              <Financeiro />
             </PaginaLayout>
           }
         />

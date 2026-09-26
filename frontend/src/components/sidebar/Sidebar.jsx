@@ -5,6 +5,8 @@ import {
   IconeAlunos,
   IconeInstrutor,
   IconeCalendario,
+  IconeCarro,
+  IconeDinheiro,
   IconeEngrenagem,
 } from "../Icones";
 
@@ -20,6 +22,16 @@ const opcoes = [
     para: "/agendamentos",
     rotulo: "Agendamentos",
     icone: <IconeCalendario tamanho={14} />,
+  },
+  {
+    para: "/veiculos",
+    rotulo: "Veículos",
+    icone: <IconeCarro tamanho={14} />,
+  },
+  {
+    para: "/financeiro",
+    rotulo: "Financeiro",
+    icone: <IconeDinheiro tamanho={14} />,
   },
   {
     para: "/configuracoes",
