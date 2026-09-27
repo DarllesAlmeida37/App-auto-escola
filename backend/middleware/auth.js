@@ -131,7 +131,7 @@ async function requireAuth(req, res, next) {
 // ---------------------------------------------------------------
 
 const MAX_TENTATIVAS = 5;
-const TEMPO_BLOQUEIO_MS = 60 * 1000;
+const TEMPO_BLOQUEIO_MS = 5 * 60 * 1000;
 
 const tentativas = new Map();
 
@@ -139,8 +139,14 @@ function obterRegistro(ip) {
   const agora = Date.now();
   const registro = tentativas.get(ip);
 
-  // Esquece o registro se já passou do tempo de bloqueio
-  if (registro && registro.bloqueadoAte <= agora) {
+  // Só zera o contador quando um bloqueio REAL (bloqueadoAte > 0)
+  // já expirou. Sem o "> 0", o registro com bloqueadoAte = 0 era
+  // apagado a cada requisição e o contador nunca passava de 1.
+  if (
+    registro &&
+    registro.bloqueadoAte > 0 &&
+    registro.bloqueadoAte <= agora
+  ) {
     tentativas.delete(ip);
 
     return null;
@@ -150,11 +156,19 @@ function obterRegistro(ip) {
 }
 
 function limiteLogin(req, res, next) {
-  const registro = obterRegistro(req.ip);
+  const agora = Date.now();
+  const registro = tentativas.get(req.ip);
 
-  if (registro) {
+  // Bloqueia apenas enquanto o bloqueio está ativo
+  if (registro && registro.bloqueadoAte > agora) {
+    const segundosRestantes = Math.ceil(
+      (registro.bloqueadoAte - agora) / 1000,
+    );
+    const minutosRestantes = Math.ceil(segundosRestantes / 60);
+
     return res.status(429).json({
-      mensagem: "Muitas tentativas de login. Aguarde um minuto.",
+      mensagem: `Muitas tentativas de login incorretas. Tente novamente em ${minutosRestantes} minuto(s).`,
+      bloqueadoAte: registro.bloqueadoAte,
     });
   }
 
